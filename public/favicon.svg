@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="FP">
+  <!-- Monogramme tracé en chemins plutôt qu'en <text> : une favicon en
+       texte dépend des polices installées sur la machine du visiteur et
+       change d'aspect d'un système à l'autre. -->
+  <style>
+    .fond { fill: #1a1714; }
+    .lettre { fill: #fdfcfa; }
+    @media (prefers-color-scheme: dark) {
+      .fond { fill: #ece7df; }
+      .lettre { fill: #14120f; }
+    }
+  </style>
+  <rect class="fond" width="64" height="64" rx="13" />
+  <!-- F -->
+  <path class="lettre" d="M14 17h17v6.4H20.6v6.1h9.1v6.4h-9.1V47H14z" />
+  <!-- P -->
+  <path
+    class="lettre"
+    d="M34 17h10.6c5.9 0 9.4 3.6 9.4 9.1s-3.5 9.2-9.4 9.2h-4v11.7H34zm6.6 12h3.2c2.2 0 3.5-1.1 3.5-2.9s-1.3-2.8-3.5-2.8h-3.2z"
+  />
+</svg>

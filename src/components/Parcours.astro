@@ -1,0 +1,50 @@
+---
+import { formaterPeriode } from '../lib/dates';
+import type { Experience } from '../data/profil.schema';
+
+interface Props {
+  parcours: readonly Experience[];
+}
+
+const { parcours } = Astro.props;
+---
+
+{
+  /* `ol` et non `ul` : l'ordre anti-chronologique porte du sens, et le schéma
+    l'impose à la source (voir `profil.schema.ts`). */
+}
+<ol class="parcours">
+  {
+    parcours.map((experience) => (
+      <li class="poste">
+        <div class="poste__entete">
+          <h3 class="poste__titre">{experience.poste}</h3>
+          {/* `datetime` au format AAAA-MM : la période reste exploitable par
+              une machine même si son libellé est écrit en français. */}
+          <p class="poste__periode">
+            <time datetime={experience.debut}>
+              {formaterPeriode(experience.debut, experience.fin)}
+            </time>
+          </p>
+          <p class="poste__organisation">
+            <b>{experience.organisation}</b> · {experience.lieu}
+          </p>
+        </div>
+
+        <p class="poste__contexte">{experience.contexte}</p>
+
+        <ul class="poste__faits">
+          {experience.faits.map((fait) => (
+            <li>{fait}</li>
+          ))}
+        </ul>
+
+        <ul class="etiquettes" aria-label={`Technologies — ${experience.organisation}`}>
+          {experience.stack.map((technologie) => (
+            <li>{technologie}</li>
+          ))}
+        </ul>
+      </li>
+    ))
+  }
+</ol>

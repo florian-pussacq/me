@@ -1,0 +1,4 @@
+# Une seule page : un sitemap n'apporterait rien qu'un moteur ne trouve
+# déjà en suivant le lien d'accueil.
+User-agent: *
+Allow: /

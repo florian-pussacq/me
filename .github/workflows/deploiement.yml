@@ -1,0 +1,74 @@
+name: Vérification & déploiement
+
+on:
+  push:
+    branches:
+      - main
+      # Le site est encore servi depuis cette branche de travail, faute de
+      # fusion sur main. À retirer une fois cette branche fusionnée.
+      - 'claude/**'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+# Droits minimaux : lecture du dépôt, plus ce qu'exige le déploiement Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un seul déploiement à la fois, sans annuler celui en cours : interrompre
+# une publication Pages à mi-course laisse le site dans un état indéterminé.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  qualite:
+    name: Qualité
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Installer les dépendances
+        run: npm ci
+
+      - name: Vérifier le formatage
+        run: npm run format:check
+
+      - name: Vérifier les types
+        run: npm run check
+
+      # Un thème retouché ne doit pas pouvoir devenir illisible sans que le
+      # build le dise. Le script sort en erreur sous le seuil AA.
+      - name: Vérifier les contrastes
+        run: npm run verifier-contrastes
+
+      # Le build valide aussi le contenu : `profil.ts` passe par son schéma
+      # Zod à l'import, une donnée mal formée fait échouer cette étape.
+      - name: Construire
+        run: npm run build
+
+      - name: Préparer l'artefact Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploiement:
+    name: Déploiement
+    needs: qualite
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.publication.outputs.page_url }}
+    steps:
+      - name: Publier sur GitHub Pages
+        id: publication
+        uses: actions/deploy-pages@v4

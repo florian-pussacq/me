@@ -1,0 +1,36 @@
+{
+  "name": "me",
+  "version": "1.0.0",
+  "description": "Site vitrine personnel de Florian Pussacq",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "verifier-contrastes": "node outils/verifier-contrastes.mjs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/florian-pussacq/me.git"
+  },
+  "bugs": {
+    "url": "https://github.com/florian-pussacq/me/issues"
+  },
+  "homepage": "https://github.com/florian-pussacq/me#readme",
+  "dependencies": {
+    "astro": "^5.18.2"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^5.9.3"
+  },
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  }
+}

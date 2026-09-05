@@ -1,0 +1,83 @@
+---
+import '../styles/polices.css';
+import '../styles/base.css';
+import '../styles/themes/brutaliste.css';
+
+import { actif } from '../lib/chemins';
+import { profil } from '../data/profil';
+
+interface Props {
+  titre: string;
+  description: string;
+}
+
+const { titre, description } = Astro.props;
+
+const canonique = new URL(Astro.url.pathname, Astro.site).href;
+const apercu = new URL(actif('apercu.png'), Astro.site).href;
+
+/*
+ * Données structurées `Person`.
+ *
+ * C'est ce qui permet à un moteur de rattacher cette page à une personne
+ * plutôt qu'à un document quelconque, et de relier entre eux les profils
+ * listés dans `sameAs`. Sur une carte de visite, c'est le seul balisage SEO
+ * qui apporte réellement quelque chose.
+ *
+ * Comme le reste, il est dérivé de `profil.ts` : aucune donnée n'est
+ * dupliquée ici, donc rien ne peut diverger du contenu affiché.
+ */
+const donneesStructurees = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: `${profil.identite.prenom} ${profil.identite.nom}`,
+  jobTitle: profil.identite.titre,
+  description: profil.identite.description,
+  url: canonique,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Bordeaux',
+    addressCountry: 'FR',
+  },
+  worksFor: {
+    '@type': 'Organization',
+    name: profil.parcours[0]?.organisation,
+  },
+  alumniOf: profil.formation.map((diplome) => ({
+    '@type': 'EducationalOrganization',
+    name: diplome.etablissement,
+  })),
+  knowsAbout: profil.competences.flatMap((groupe) => groupe.elements),
+  sameAs: profil.liens.map((lien) => lien.url),
+};
+---
+
+<!doctype html>
+<html lang="fr" data-theme="brutaliste">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{titre}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonique} />
+    <link rel="icon" href={actif('favicon.svg')} type="image/svg+xml" />
+
+    <meta property="og:type" content="profile" />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:title" content={titre} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonique} />
+    <meta property="og:image" content={apercu} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(donneesStructurees)} />
+  </head>
+
+  <body>
+    <a class="evitement" href="#contenu">Aller au contenu</a>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,21 @@
+---
+/**
+ * Une section de la page.
+ *
+ * Existe pour que la plomberie d'accessibilité — le lien entre la région et
+ * son titre via `aria-labelledby` — soit écrite une seule fois plutôt que
+ * répétée à l'identique dans les cinq sections, où elle finirait par diverger.
+ */
+interface Props {
+  id: string;
+  titre: string;
+}
+
+const { id, titre } = Astro.props;
+const idTitre = `${id}-titre`;
+---
+
+<section class="section" id={id} aria-labelledby={idTitre}>
+  <h2 class="section__titre" id={idTitre}>{titre}</h2>
+  <slot />
+</section>

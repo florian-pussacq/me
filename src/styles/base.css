@@ -1,0 +1,493 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ *  STRUCTURE — la mise en page, le rythme, l'accessibilité.
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Ce fichier ne contient AUCUNE couleur en dur et AUCUNE police en dur : il
+ * décrit comment les choses sont disposées, en s'appuyant sur des jetons
+ * (`--fond`, `--pol-titre`, …) dont les VALEURS sont fournies par le thème
+ * actif — voir `themes/brutaliste.css`, le seul qui reste.
+ *
+ * Les valeurs définies sur `:root` ci-dessous sont des replis neutres. Si le
+ * thème oublie un jeton, le site reste lisible au lieu de rendre du texte
+ * noir sur fond noir.
+ */
+
+:root {
+  /* Couleurs — replis neutres, systématiquement écrasés par le thème. */
+  --fond: #ffffff;
+  --fond-eleve: #f4f4f5;
+  --texte: #18181b;
+  --texte-doux: #52525b;
+  --accent: #1d4ed8;
+  /* Variante lisible de l'accent, pour le TEXTE de petite taille.
+     Certains accents (l'orange du thème brutaliste) sont parfaits en aplat
+     décoratif et échouent au seuil AA de 4,5:1 sur du corps de texte. Les
+     séparer évite d'avoir à choisir entre l'un et l'autre. */
+  --accent-texte: #1d4ed8;
+  --sur-accent: #ffffff;
+  --trait: #d4d4d8;
+
+  /* Typographie */
+  --pol-titre: ui-sans-serif, system-ui, sans-serif;
+  --pol-corps: ui-sans-serif, system-ui, sans-serif;
+  --pol-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+  --titre-graisse: 700;
+  --titre-casse: none;
+  --titre-interlettre: -0.02em;
+  --titre-interligne: 1.1;
+  --corps-interligne: 1.65;
+
+  /* Rythme — toutes les marges du site en dérivent. */
+  --pas: 1rem;
+  --largeur: 62rem;
+  --mesure: 68ch;
+
+  /* Décor */
+  --rayon: 0.5rem;
+  --trait-epaisseur: 1px;
+  --etiquette-fond: var(--fond-eleve);
+  --etiquette-texte: var(--texte-doux);
+  --etiquette-rayon: 999px;
+
+  /* Échelle typographique fluide : pas de palier, pas de media query. */
+  --t-nom: clamp(2.6rem, 1.6rem + 4.6vw, 5rem);
+  --t-titre: clamp(1.3rem, 1.05rem + 1.1vw, 1.8rem);
+  --t-section: clamp(1.15rem, 1rem + 0.6vw, 1.4rem);
+  --t-poste: clamp(1.1rem, 1rem + 0.4vw, 1.3rem);
+  --t-corps: clamp(1rem, 0.97rem + 0.16vw, 1.075rem);
+  --t-petit: 0.875rem;
+  --t-menu: 0.8rem;
+
+  color-scheme: light;
+}
+
+/* ── Remise à zéro ─────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--pol-corps);
+  font-size: var(--t-corps);
+  line-height: var(--corps-interligne);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+ul,
+ol {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--pol-titre);
+  font-weight: var(--titre-graisse);
+  line-height: var(--titre-interligne);
+  letter-spacing: var(--titre-interlettre);
+  text-wrap: balance;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+/* ── Accessibilité ─────────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.evitement {
+  position: absolute;
+  left: 0.5rem;
+  top: -100%;
+  z-index: 100;
+  padding: 0.75rem 1.25rem;
+  background: var(--accent-texte);
+  color: var(--sur-accent);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--rayon);
+  transition: top 0.15s ease;
+}
+
+.evitement:focus {
+  top: 0.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ── Gabarit ───────────────────────────────────────────────────────── */
+
+.page {
+  width: 100%;
+  max-width: var(--largeur);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 5vw, 3rem);
+}
+
+.section {
+  padding-block: calc(var(--pas) * 3.25);
+  border-top: var(--trait-epaisseur) solid var(--trait);
+}
+
+.section__titre {
+  font-size: var(--t-section);
+  text-transform: var(--titre-casse);
+  color: var(--texte-doux);
+  margin-bottom: calc(var(--pas) * 1.75);
+}
+
+/* ── En-tête ───────────────────────────────────────────────────────── */
+
+.entete {
+  padding-block: calc(var(--pas) * 4) calc(var(--pas) * 3.5);
+}
+
+.entete__nom {
+  font-size: var(--t-nom);
+  margin-bottom: 0.25rem;
+}
+
+.entete__titre {
+  font-size: var(--t-titre);
+  font-family: var(--pol-titre);
+  color: var(--accent-texte);
+  font-weight: var(--titre-graisse);
+  letter-spacing: var(--titre-interlettre);
+}
+
+.entete__accroche {
+  max-width: var(--mesure);
+  margin-top: calc(var(--pas) * 1.25);
+  color: var(--texte-doux);
+}
+
+.entete__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--pas) * 1.25);
+  margin-top: calc(var(--pas) * 1.5);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.entete__lieu {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ── Principes ─────────────────────────────────────────────────────── */
+
+.principes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(19rem, 100%), 1fr));
+  gap: calc(var(--pas) * 1.5);
+}
+
+.principe__titre {
+  font-size: var(--t-poste);
+  margin-bottom: 0.4rem;
+}
+
+.principe__texte {
+  color: var(--texte-doux);
+  font-size: var(--t-petit);
+  line-height: 1.6;
+}
+
+/* ── Parcours ──────────────────────────────────────────────────────── */
+
+.parcours {
+  display: grid;
+  gap: calc(var(--pas) * 2.5);
+}
+
+.poste__entete {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.25rem calc(var(--pas) * 1.5);
+}
+
+.poste__titre {
+  font-size: var(--t-poste);
+}
+
+.poste__periode {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.poste__organisation {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  width: 100%;
+  margin-bottom: calc(var(--pas) * 0.75);
+}
+
+.poste__organisation b {
+  color: var(--accent-texte);
+  font-weight: 600;
+}
+
+.poste__contexte {
+  max-width: var(--mesure);
+  margin-bottom: calc(var(--pas) * 0.75);
+}
+
+.poste__faits {
+  display: grid;
+  gap: 0.4rem;
+  max-width: var(--mesure);
+  color: var(--texte-doux);
+  font-size: var(--t-petit);
+}
+
+.poste__faits li {
+  padding-left: 1.15rem;
+  position: relative;
+}
+
+.poste__faits li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+/* ── Étiquettes (stacks, compétences) ──────────────────────────────── */
+
+.etiquettes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: calc(var(--pas) * 1);
+}
+
+.etiquettes li {
+  padding: 0.2rem 0.6rem;
+  font-size: var(--t-menu);
+  font-family: var(--pol-mono);
+  background: var(--etiquette-fond);
+  color: var(--etiquette-texte);
+  border-radius: var(--etiquette-rayon);
+  white-space: nowrap;
+}
+
+/* ── Compétences ───────────────────────────────────────────────────── */
+
+.competences {
+  display: grid;
+  gap: calc(var(--pas) * 1.75);
+}
+
+.groupe__titre {
+  font-size: var(--t-petit);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--texte-doux);
+  font-weight: 600;
+}
+
+.groupe .etiquettes {
+  margin-top: 0.6rem;
+}
+
+/* ── Formation & langues ───────────────────────────────────────────── */
+
+.formation {
+  display: grid;
+  gap: calc(var(--pas) * 1.1);
+  max-width: var(--mesure);
+}
+
+.diplome {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.15rem calc(var(--pas) * 1.5);
+}
+
+.diplome__intitule {
+  font-size: var(--t-corps);
+  font-weight: 600;
+  font-family: var(--pol-corps);
+  letter-spacing: normal;
+}
+
+.diplome__etablissement {
+  width: 100%;
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.diplome__annees {
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.mention {
+  font-size: var(--t-menu);
+  color: var(--accent-texte);
+}
+
+.complements {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: calc(var(--pas) * 2);
+  font-size: var(--t-petit);
+  color: var(--texte-doux);
+}
+
+.complements dt {
+  font-weight: 600;
+  color: var(--texte);
+}
+
+.complements div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.complements dd {
+  margin: 0;
+}
+
+.complements dd:not(:last-child)::after {
+  content: ' ·';
+}
+
+/* ── Liens ─────────────────────────────────────────────────────────── */
+
+.liens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.lien {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border: var(--trait-epaisseur) solid var(--trait);
+  border-radius: var(--rayon);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: var(--t-petit);
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.lien:hover {
+  border-color: var(--accent);
+  color: var(--accent-texte);
+}
+
+.lien svg {
+  width: 1.05em;
+  height: 1.05em;
+  flex-shrink: 0;
+}
+
+/* ── Pied de page ──────────────────────────────────────────────────── */
+
+.pied {
+  padding-block: calc(var(--pas) * 2.5);
+  border-top: var(--trait-epaisseur) solid var(--trait);
+  font-size: var(--t-menu);
+  color: var(--texte-doux);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem calc(var(--pas) * 1.5);
+  justify-content: space-between;
+}
+
+/* ── Impression ────────────────────────────────────────────────────── */
+/* Le CV PDF n'est pas publié ; en contrepartie, imprimer la page doit
+   produire un document propre. Ctrl+P donne un CV correct. */
+
+@media print {
+  :root {
+    --fond: #fff;
+    --texte: #000;
+    --texte-doux: #333;
+    --accent: #000;
+    --trait: #bbb;
+  }
+  body {
+    font-size: 10.5pt;
+  }
+  .evitement {
+    display: none !important;
+  }
+  .section {
+    padding-block: 1.25rem;
+    break-inside: avoid;
+  }
+  .poste,
+  .principe {
+    break-inside: avoid;
+  }
+  .lien {
+    border: none;
+    padding: 0;
+  }
+}

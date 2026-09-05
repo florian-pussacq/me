@@ -1,0 +1,26 @@
+---
+import IconeReseau from './IconeReseau.astro';
+import type { Lien } from '../data/profil.schema';
+
+interface Props {
+  liens: readonly Lien[];
+}
+
+const { liens } = Astro.props;
+---
+
+<ul class="liens">
+  {
+    liens.map((lien) => (
+      <li>
+        {/* `noopener` : sans lui, la page ouverte garde une référence vers
+            celle-ci via `window.opener`. `me` indique aux moteurs et aux
+            agrégateurs qu'il s'agit du même individu. */}
+        <a class="lien" href={lien.url} rel="me noopener" target="_blank">
+          <IconeReseau reseau={lien.reseau} />
+          {lien.libelle}
+        </a>
+      </li>
+    ))
+  }
+</ul>

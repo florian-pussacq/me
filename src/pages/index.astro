@@ -1,0 +1,106 @@
+---
+import Base from '../layouts/Base.astro';
+import Entete from '../components/Entete.astro';
+import Section from '../components/Section.astro';
+import Parcours from '../components/Parcours.astro';
+import Liens from '../components/Liens.astro';
+import { profil } from '../data/profil';
+import { annee } from '../lib/dates';
+
+const { identite, principes, parcours, competences, formation, langues, interets, liens } = profil;
+
+const titre = `${identite.prenom} ${identite.nom} — ${identite.titre}`;
+
+// L'année de début de carrière est dérivée de la dernière entrée du
+// parcours, jamais écrite en dur : elle ne peut donc pas contredire le
+// contenu, et elle n'a pas besoin d'être maintenue.
+const premierPoste = parcours[parcours.length - 1];
+const debutCarriere = premierPoste ? annee(premierPoste.debut) : null;
+---
+
+<Base titre={titre} description={identite.description}>
+  <main id="contenu" class="page">
+    <Entete />
+
+    <Section id="principes" titre="Ce que je défends">
+      <ul class="principes">
+        {
+          principes.map((principe) => (
+            <li class="principe">
+              <h3 class="principe__titre">{principe.titre}</h3>
+              <p class="principe__texte">{principe.explication}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </Section>
+
+    <Section id="parcours" titre="Parcours">
+      <Parcours parcours={parcours} />
+    </Section>
+
+    <Section id="competences" titre="Compétences">
+      <div class="competences">
+        {
+          competences.map((groupe) => (
+            <div class="groupe">
+              <h3 class="groupe__titre">{groupe.intitule}</h3>
+              <ul class="etiquettes">
+                {groupe.elements.map((element) => (
+                  <li>{element}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        }
+      </div>
+    </Section>
+
+    <Section id="formation" titre="Formation">
+      <ul class="formation">
+        {
+          formation.map((diplome) => (
+            <li class="diplome">
+              <h3 class="diplome__intitule">
+                {diplome.intitule}
+                {diplome.mention && <span class="mention"> · mention</span>}
+              </h3>
+              <p class="diplome__annees">{diplome.annees}</p>
+              <p class="diplome__etablissement">{diplome.etablissement}</p>
+            </li>
+          ))
+        }
+      </ul>
+
+      <dl class="complements">
+        <div>
+          <dt>Langues</dt>
+          {langues.map((langue) => <dd>{langue}</dd>)}
+        </div>
+        {
+          interets && (
+            <div>
+              <dt>Centres d’intérêt</dt>
+              {interets.map((interet) => (
+                <dd>{interet}</dd>
+              ))}
+            </div>
+          )
+        }
+      </dl>
+    </Section>
+
+    <Section id="contact" titre="Me joindre">
+      <Liens liens={liens} />
+    </Section>
+  </main>
+
+  <footer class="pied page">
+    <p>
+      {identite.prenom}
+      {identite.nom}{debutCarriere && ` · développeur depuis ${debutCarriere}`} · {
+        identite.localisation
+      }
+    </p>
+  </footer>
+</Base>

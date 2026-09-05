@@ -1,0 +1,34 @@
+/*
+ * Polices auto-hébergées, sous-ensemble latin.
+ *
+ * Aucune requête vers un serveur tiers depuis le navigateur du visiteur :
+ * Google Fonts en CDN transmet l'IP de chaque visiteur à Google, ce que la
+ * CNIL et la jurisprudence allemande de 2022 considèrent comme un transfert
+ * de données personnelles sans base légale. Ici, tout est servi par GitHub
+ * Pages avec le reste du site.
+ *
+ * Les chemins sont relatifs : Vite empreinte les fichiers et réécrit les URL
+ * en tenant compte du `base` du site. Rien n'est codé en dur.
+ *
+ * `font-display: swap` : le texte s'affiche immédiatement dans la police de
+ * repli, puis bascule.
+ *
+ * Deux familles seulement : celles qu'utilise le thème brutaliste, le seul
+ * qui reste.
+ */
+
+@font-face {
+  font-family: 'Inter';
+  src: url('./polices/inter.woff2') format('woff2');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Archivo';
+  src: url('./polices/archivo.woff2') format('woff2');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
