@@ -1,0 +1,69 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ *  DÉCLENCHEURS — les seuls indices visibles des deux œufs de Pâques.
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Cette feuille est la seule des trois à partir avec la page. Elle doit
+ * l'être : un indice réagit AVANT que le module qu'il annonce ne soit
+ * téléchargé. L'habillage du casse-briques et celui du rapport de tests,
+ * eux, voyagent avec leur moteur et n'arrivent qu'au déclenchement.
+ *
+ * D'où sa taille : deux gestes, quatre règles. Tout ce qui peut attendre
+ * attend.
+ */
+
+/* ── Cinq clics sur le nom → le casse-briques ──────────────────────── */
+
+/*
+ * À partir du troisième clic, le nom bascule. C'est tout l'indice : assez
+ * pour comprendre que la page réagit, pas assez pour dire à quoi. Le
+ * mouvement disparaît de lui-même sous `prefers-reduced-motion` — la règle
+ * globale de `base.css` ramène toutes les transitions à zéro.
+ */
+.entete__nom {
+  transition: transform 0.12s ease-out;
+}
+
+.entete__nom.est-chatouille {
+  transform: rotate(-1.5deg) translateY(-2px);
+}
+
+/* ── Appui long sur le pied de page → le rapport de tests ──────────── */
+
+/*
+ * Le rapport s'ouvre en tapant « tdd », ce qu'aucun téléphone ne permet :
+ * son clavier n'apparaît que pour un champ de saisie, et cette page n'en a
+ * aucun. L'appui long est donc la porte tactile — et elle fonctionne aussi
+ * à la souris.
+ *
+ * `user-select` et `-webkit-touch-callout` : sans eux, iOS et Android
+ * ouvrent la bulle de sélection de texte par-dessus l'appui. Le pied de
+ * page cesse donc d'être sélectionnable ; c'est le seul prix de ce geste,
+ * et il porte sur la seule ligne de la page dont personne ne copie le
+ * texte.
+ */
+.pied {
+  position: relative;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/*
+ * La barre grandit sur toute la durée de l'appui : sans elle, un appui long
+ * est indiscernable d'une page qui ne répond pas. C'est aussi ce qui
+ * apprend le geste à qui l'a déclenché par hasard.
+ */
+.pied::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 0;
+  background: var(--accent);
+}
+
+.pied.est-pressee::after {
+  width: 100%;
+  transition: width var(--pied-appui, 600ms) linear;
+}

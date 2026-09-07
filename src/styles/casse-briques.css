@@ -3,32 +3,15 @@
  *  CASSE-BRIQUES — l'habillage du jeu caché.
  * ═══════════════════════════════════════════════════════════════════════
  *
- * Le moteur (`src/scripts/casse-briques.ts`) n'est téléchargé qu'au
- * déclenchement ; cette feuille, elle, part avec la page. Elle est donc
- * tenue courte, et elle ne pose AUCUNE couleur en dur : comme le reste du
- * site, elle consomme les jetons du thème actif.
+ * Importée par `src/scripts/casse-briques.ts`, donc embarquée dans le même
+ * morceau que le moteur : une visite qui ne déclenche pas le jeu ne la
+ * télécharge jamais. L'indice qui l'annonce, lui, vit dans
+ * `declencheurs.css` — il doit réagir avant que tout ceci n'existe.
  *
- * Tout est porté par `[data-casse-briques]`, posé sur `<html>` le temps de
- * la partie. Hors partie, ce fichier ne s'applique qu'à une seule chose :
- * le tremblement du nom au troisième clic, qui dit qu'il se passe quelque
- * chose sans dire quoi.
+ * Elle ne pose AUCUNE couleur en dur : comme le reste du site, elle
+ * consomme les jetons du thème actif. Tout est porté par
+ * `[data-casse-briques]`, posé sur `<html>` le temps de la partie.
  */
-
-/* ── L'indice ──────────────────────────────────────────────────────── */
-
-/*
- * À partir du troisième clic, le nom bascule. C'est tout l'indice : assez
- * pour comprendre que la page réagit, pas assez pour dire à quoi. Le
- * mouvement disparaît de lui-même sous `prefers-reduced-motion` — la règle
- * globale de `base.css` ramène toutes les transitions à zéro.
- */
-.entete__nom {
-  transition: transform 0.12s ease-out;
-}
-
-.entete__nom.est-chatouille {
-  transform: rotate(-1.5deg) translateY(-2px);
-}
 
 /* ── Page en partie ────────────────────────────────────────────────── */
 

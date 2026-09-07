@@ -478,7 +478,7 @@ const HONNETETE: Suite = {
           `≤ ${nombre(BUDGET_CRITIQUE / 1024)} ko chargés sans demande`,
           `${nombre(poids)} octets pour ${critiques.length} modules`,
           {
-            note: 'Deux compteurs, l’un de clics, l’autre de touches. Tout le reste attend qu’on le déclenche.',
+            note: 'Deux compteurs de gestes et l’aide de préchargement de Vite. Tout le reste attend qu’on le demande.',
           },
         );
       },

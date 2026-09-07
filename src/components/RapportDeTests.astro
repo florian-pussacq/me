@@ -1,21 +1,46 @@
 ---
 /**
- * Le déclencheur du rapport de tests : on tape « tdd » sur la page.
+ * Les deux déclencheurs du rapport de tests.
  *
  * Comme `CasseBriques.astro`, ce composant ne rend aucun HTML et n'embarque
- * qu'un compteur — ici de touches. Le moteur, ses assertions et sa feuille
- * de style partent dans un module importé au moment où le code est saisi.
+ * que de quoi reconnaître un geste. Les assertions et leur habillage
+ * partent dans un module importé au moment où le geste est fait.
  *
- * Pourquoi le clavier plutôt qu'un élément à cliquer : ce rapport ne
- * s'adresse pas au même public que le casse-briques. Il parle à quelqu'un
- * qui lit du code, et c'est aussi à lui que s'adresse la ligne écrite dans
- * la console — le seul endroit où on peut laisser un indice sans encombrer
- * la page de ceux que ça n'intéresse pas.
+ * Deux gestes, parce qu'un seul ne suffisait pas :
+ *
+ * — Au clavier, on tape « tdd ». C'est le geste juste pour ce rapport : il
+ *   s'adresse à quelqu'un qui lit du code, et c'est à lui que parle aussi
+ *   la ligne écrite dans la console — le seul endroit où laisser un indice
+ *   sans encombrer la page de ceux que ça n'intéresse pas.
+ * — Au doigt, on appuie longuement sur le pied de page. Sans ce second
+ *   geste, le rapport serait purement et simplement inaccessible sur
+ *   téléphone : le clavier logiciel n'apparaît que pour un champ de saisie,
+ *   et cette page n'en a aucun.
  */
+import '../styles/declencheurs.css';
 ---
 
 <script>
+  /** Le code à taper, n'importe où sur la page. */
   const CODE = 'tdd';
+
+  /** Durée de l'appui long, en accord avec la barre de `declencheurs.css`. */
+  const DUREE_APPUI = 600;
+
+  /** Au-delà, le doigt fait défiler la page : ce n'est plus un appui. */
+  const TOLERANCE = 12;
+
+  function ouvrir(): void {
+    // Un œuf de Pâques à la fois : le second se déclencherait par-dessus le
+    // premier, et rien dans les deux ne prévoit de partager l'écran.
+    if (document.querySelector('.jeu, .tests')) return;
+
+    void import('../scripts/rapport-de-tests').then(({ ouvrirRapport }) => {
+      ouvrirRapport();
+    });
+  }
+
+  // ── Au clavier ───────────────────────────────────────────────────────
 
   let saisie = '';
 
@@ -24,18 +49,57 @@
     if (evenement.ctrlKey || evenement.metaKey || evenement.altKey) return;
     if (evenement.key.length !== 1) return;
 
-    // Un œuf de Pâques à la fois : le second se déclencherait par-dessus le
-    // premier, et rien dans les deux ne prévoit de partager l'écran.
-    if (document.querySelector('.jeu, .tests')) return;
-
     saisie = (saisie + evenement.key.toLowerCase()).slice(-CODE.length);
     if (saisie !== CODE) return;
 
     saisie = '';
-    void import('../scripts/rapport-de-tests').then(({ ouvrirRapport }) => {
-      ouvrirRapport();
-    });
+    ouvrir();
   });
+
+  // ── Au doigt ─────────────────────────────────────────────────────────
+
+  const pied = document.querySelector<HTMLElement>('.pied');
+
+  if (pied) {
+    // La durée vient d'ici, pas de la feuille de style : l'appui et la barre
+    // qui le montre ne peuvent pas diverger.
+    pied.style.setProperty('--pied-appui', `${DUREE_APPUI}ms`);
+
+    let minuterie = 0;
+    let depart = { x: 0, y: 0 };
+
+    function annuler(): void {
+      if (!minuterie) return;
+      window.clearTimeout(minuterie);
+      minuterie = 0;
+      pied?.classList.remove('est-pressee');
+    }
+
+    pied.addEventListener('pointerdown', (evenement) => {
+      if (evenement.button !== 0) return;
+      if (document.querySelector('.jeu, .tests')) return;
+
+      depart = { x: evenement.clientX, y: evenement.clientY };
+      pied.classList.add('est-pressee');
+      minuterie = window.setTimeout(() => {
+        annuler();
+        ouvrir();
+      }, DUREE_APPUI);
+    });
+
+    pied.addEventListener('pointermove', (evenement) => {
+      const ecart = Math.hypot(evenement.clientX - depart.x, evenement.clientY - depart.y);
+      if (ecart > TOLERANCE) annuler();
+    });
+
+    for (const fin of ['pointerup', 'pointercancel', 'pointerleave']) {
+      pied.addEventListener(fin, annuler);
+    }
+
+    // Android ouvre son menu contextuel sur l'appui long, et il passerait
+    // par-dessus le rapport.
+    pied.addEventListener('contextmenu', (evenement) => evenement.preventDefault());
+  }
 
   // Une ligne, une seule. Ceux qui ouvrent la console de la page d'un
   // développeur cherchent précisément ce genre de chose.

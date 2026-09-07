@@ -4,9 +4,6 @@ on:
   push:
     branches:
       - main
-      # Le site est encore servi depuis cette branche de travail, faute de
-      # fusion sur main. À retirer une fois cette branche fusionnée.
-      - 'claude/**'
   pull_request:
     branches: [main]
   workflow_dispatch:

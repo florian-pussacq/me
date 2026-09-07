@@ -23,9 +23,11 @@
  * — Quitter la partie remet la page dans l'état où on l'a trouvée : les
  *   briques repoussent. Un CV amputé de ses compétences serait un bug.
  *
- * Ce module n'est chargé que si le jeu est déclenché — `CasseBriques.astro`
- * l'importe dynamiquement. Une visite normale ne le télécharge jamais.
+ * Ce module — et sa feuille de style — ne sont chargés que si le jeu est
+ * déclenché : `CasseBriques.astro` les importe dynamiquement. Une visite
+ * normale ne les télécharge jamais.
  */
+import '../styles/casse-briques.css';
 
 /** Les étiquettes du parcours servent de décor : seules celles-ci jouent. */
 const SELECTEUR_BRIQUES = '#competences .etiquettes li';

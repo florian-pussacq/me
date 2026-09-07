@@ -50,7 +50,12 @@ page exacte : les compétences repoussent.
 ### Le rapport de tests
 
 On tape `tdd` n'importe où sur la page — la console le souffle à qui
-l'ouvre — et un bandeau de test runner s'ouvre en bas de l'écran.
+l'ouvre — et un bandeau de test runner s'ouvre en bas de l'écran. Au doigt,
+c'est un appui long sur le pied de page : le clavier d'un téléphone
+n'apparaît que pour un champ de saisie, et cette page n'en a aucun, donc
+sans ce second geste le rapport y serait inaccessible. Une barre d'accent
+grandit sous le pied de page pendant l'appui, sinon rien ne distingue un
+appui long d'une page qui ne répond pas.
 
 Les quatorze tests sont vrais. Ils lisent le DOM affiché, calculent les
 rapports de contraste à partir des couleurs réellement appliquées par le
@@ -64,20 +69,22 @@ Le dernier échoue, toujours : `page.neChargeAucunJavaScript()`. Il ne peut
 pas en être autrement, puisqu'il a fallu charger un module pour l'afficher.
 Son bouton **Corriger** ne corrige rien. Il lance le casse-briques.
 
-| Fichier                           | Rôle                                    |
-| --------------------------------- | --------------------------------------- |
-| `components/CasseBriques.astro`   | Le compteur de clics, et rien d'autre   |
-| `components/RapportDeTests.astro` | Le compteur de touches, et rien d'autre |
-| `scripts/casse-briques.ts`        | Le moteur du jeu, chargé à la demande   |
-| `scripts/rapport-de-tests.ts`     | Les assertions, chargées à la demande   |
-| `styles/casse-briques.css`        | L'habillage du jeu, en jetons du thème  |
-| `styles/rapport-de-tests.css`     | L'habillage du bandeau, idem            |
+| Fichier                           | Rôle                                                                |
+| --------------------------------- | ------------------------------------------------------------------- |
+| `components/CasseBriques.astro`   | Le compteur de clics, et rien d'autre                               |
+| `components/RapportDeTests.astro` | Les deux gestes, et rien d'autre                                    |
+| `scripts/casse-briques.ts`        | Le moteur du jeu, chargé à la demande                               |
+| `scripts/rapport-de-tests.ts`     | Les assertions, chargées à la demande                               |
+| `styles/declencheurs.css`         | Les deux indices — la seule feuille des trois à partir avec la page |
+| `styles/casse-briques.css`        | L'habillage du jeu, avec son moteur                                 |
+| `styles/rapport-de-tests.css`     | L'habillage du bandeau, avec le sien                                |
 
-Ce que ça coûte à une visite qui ne déclenche rien : environ 1,5 ko
-compressé — deux compteurs et l'aide de préchargement de Vite — plus la
-feuille de style du jeu, seule à devoir être là avant son déclenchement pour
-animer l'indice. Les deux moteurs (2,6 et 4,4 ko compressés) partent dans
-des modules séparés, importés au moment où on les demande.
+Ce que ça coûte à une visite qui ne déclenche rien : 1,8 ko compressé de
+JavaScript — deux compteurs de gestes et l'aide de préchargement de Vite —
+et les quelques lignes de `declencheurs.css`. Une feuille de style ne peut
+pas attendre le déclenchement quand c'est elle qui l'annonce ; les deux
+autres, elles, voyagent avec leur moteur (2,6 et 4,4 ko compressés) et ne
+sont téléchargées que si on va les chercher.
 
 ## Déploiement
 

@@ -3,15 +3,16 @@
  * Le déclencheur du jeu caché : cinq clics sur le nom.
  *
  * Ce composant ne rend aucun HTML. Il n'embarque que le compteur de clics —
- * quelques lignes — et va chercher le moteur du casse-briques par un import
- * dynamique. Une visite normale ne télécharge donc que ce compteur, et le
- * site reste ce qu'il a toujours été : une page statique.
+ * quelques lignes — et va chercher le moteur du casse-briques, et son
+ * habillage, par un import dynamique. Une visite normale ne télécharge donc
+ * que ce compteur, et le site reste ce qu'il a toujours été : une page
+ * statique.
  *
  * Pourquoi le nom : c'est le seul élément assez gros pour qu'on le touche
  * par hasard, au doigt comme à la souris, et le seul dont on ne s'étonne
  * pas d'avoir cliqué dessus cinq fois.
  */
-import '../styles/casse-briques.css';
+import '../styles/declencheurs.css';
 ---
 
 <script>
