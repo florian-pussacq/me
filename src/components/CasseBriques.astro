@@ -1,0 +1,56 @@
+---
+/**
+ * Le déclencheur du jeu caché : cinq clics sur le nom.
+ *
+ * Ce composant ne rend aucun HTML. Il n'embarque que le compteur de clics —
+ * quelques lignes — et va chercher le moteur du casse-briques par un import
+ * dynamique. Une visite normale ne télécharge donc que ce compteur, et le
+ * site reste ce qu'il a toujours été : une page statique.
+ *
+ * Pourquoi le nom : c'est le seul élément assez gros pour qu'on le touche
+ * par hasard, au doigt comme à la souris, et le seul dont on ne s'étonne
+ * pas d'avoir cliqué dessus cinq fois.
+ */
+import '../styles/casse-briques.css';
+---
+
+<script>
+  const CLICS_REQUIS = 5;
+  /** Au-delà, ce n'est plus une série de clics mais deux clics distincts. */
+  const DELAI_MAX = 700;
+  /** Le nom se met à trembler à partir de ce clic : l'indice, pas la clé. */
+  const CLICS_AVANT_INDICE = 3;
+
+  const nom = document.querySelector<HTMLElement>('.entete__nom');
+
+  if (nom) {
+    // Pour rendre le focus au nom en sortant de la partie. Un titre n'est
+    // pas focusable par défaut, et `-1` ne l'ajoute pas au parcours de
+    // tabulation : il ne devient atteignable que par script.
+    nom.tabIndex = -1;
+
+    let clics = 0;
+    let precedent = 0;
+
+    nom.addEventListener('click', (evenement) => {
+      const maintenant = evenement.timeStamp;
+      clics = maintenant - precedent > DELAI_MAX ? 1 : clics + 1;
+      precedent = maintenant;
+
+      nom.classList.toggle('est-chatouille', clics >= CLICS_AVANT_INDICE);
+      window.setTimeout(() => nom.classList.remove('est-chatouille'), DELAI_MAX);
+
+      if (clics < CLICS_REQUIS) return;
+
+      clics = 0;
+      nom.classList.remove('est-chatouille');
+      // Cinq clics rapides sélectionnent le titre : on nettoie avant de
+      // couvrir la page.
+      window.getSelection()?.removeAllRanges();
+
+      void import('../scripts/casse-briques').then(({ demarrerCasseBriques }) => {
+        demarrerCasseBriques();
+      });
+    });
+  }
+</script>
