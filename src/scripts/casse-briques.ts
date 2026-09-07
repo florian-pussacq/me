@@ -111,7 +111,7 @@ const GABARIT = `
   <p class="jeu__hud">
     <span class="jeu__compteur" data-vies></span>
     <span class="jeu__compteur" data-briques></span>
-    <span class="jeu__aide">Souris ou ← → · Espace pour lancer · Échap pour sortir</span>
+    <span class="jeu__aide">Doigt, souris ou ← → · Toucher pour lancer · Échap pour sortir</span>
   </p>
   <div class="jeu__panneau" role="status" hidden>
     <p class="jeu__titre" data-titre></p>
@@ -188,6 +188,7 @@ export function demarrerCasseBriques(): void {
   // l'affinement de type opéré par la garde ci-dessus.
   const contexte: CanvasRenderingContext2D = contexteEventuel;
 
+  const bandeau = requis<HTMLElement>(couche, '.jeu__hud');
   const affichageVies = requis<HTMLElement>(couche, '[data-vies]');
   const affichageBriques = requis<HTMLElement>(couche, '[data-briques]');
   const panneau = requis<HTMLElement>(couche, '.jeu__panneau');
@@ -217,6 +218,14 @@ export function demarrerCasseBriques(): void {
 
   let largeur = 0;
   let hauteur = 0;
+  /**
+   * Le bord inférieur du bandeau d'état, qui est opaque et couvre le haut
+   * de la toile : c'est là que la balle rebondit, pas à zéro.
+   *
+   * Mesuré à chaque redimensionnement plutôt qu'écrit en dur — sur un
+   * écran étroit le bandeau passe sur deux lignes.
+   */
+  let plafond = 0;
   let phase: Phase = 'attente';
   let vies = VIES_INITIALES;
   let vitesse = BALLE_VITESSE_INITIALE;
@@ -245,7 +254,7 @@ export function demarrerCasseBriques(): void {
   // ── Terrain ──────────────────────────────────────────────────────────
 
   function mesurer(): void {
-    const plafond = hauteur - ZONE_RAQUETTE;
+    const sol = hauteur - ZONE_RAQUETTE;
     for (const brique of briques) {
       const rect = brique.element.getBoundingClientRect();
       brique.x = rect.left;
@@ -254,7 +263,7 @@ export function demarrerCasseBriques(): void {
       brique.h = rect.height;
       // Une étiquette hors de la zone atteignable sortirait la partie de
       // toute possibilité de victoire : elle est simplement hors jeu.
-      brique.jouable = rect.width > 0 && rect.top >= 4 && rect.bottom <= plafond;
+      brique.jouable = rect.width > 0 && rect.top >= plafond + 4 && rect.bottom <= sol;
       brique.element.classList.toggle(CLASSE_BRIQUE, brique.jouable);
     }
   }
@@ -262,6 +271,7 @@ export function demarrerCasseBriques(): void {
   function redimensionner(): void {
     largeur = window.innerWidth;
     hauteur = window.innerHeight;
+    plafond = bandeau.getBoundingClientRect().height;
 
     const densite = Math.min(window.devicePixelRatio || 1, 2);
     toile.width = Math.round(largeur * densite);
@@ -351,8 +361,8 @@ export function demarrerCasseBriques(): void {
       vx = -Math.abs(vx);
     }
 
-    if (balle.y <= 0) {
-      balle.y = 0;
+    if (balle.y <= plafond) {
+      balle.y = plafond;
       vy = Math.abs(vy);
     }
 
@@ -495,10 +505,24 @@ export function demarrerCasseBriques(): void {
     if (evenement.key === 'ArrowRight') versDroite = false;
   }
 
-  couche.addEventListener('pointermove', (evenement) => {
-    raquette.x = borner(evenement.clientX - raquette.l / 2, 0, largeur - raquette.l);
+  function suivrePointeur(x: number): void {
+    raquette.x = borner(x - raquette.l / 2, 0, largeur - raquette.l);
+  }
+
+  couche.addEventListener('pointerdown', (evenement) => {
+    // Seule la toile joue : les boutons du panneau de fin gardent leur
+    // comportement de bouton, capture de pointeur comprise.
+    if (evenement.target !== toile) return;
+
+    // Sans capture, le doigt qui sort de la toile — ou que le navigateur
+    // décide d'interpréter autrement — cesse d'envoyer ses positions, et la
+    // raquette se fige au milieu d'un déplacement.
+    couche.setPointerCapture(evenement.pointerId);
+    suivrePointeur(evenement.clientX);
+    lancer();
   });
-  couche.addEventListener('pointerdown', () => lancer());
+
+  couche.addEventListener('pointermove', (evenement) => suivrePointeur(evenement.clientX));
   boutonRejouer.addEventListener('click', rejouer);
   boutonQuitter.addEventListener('click', quitter);
   window.addEventListener('resize', redimensionner);

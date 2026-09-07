@@ -58,6 +58,10 @@ html[data-casse-briques] {
   position: fixed;
   inset: 0;
   z-index: 50;
+  /* Sans cela, le navigateur mobile prend le glissement pour un
+     défilement : il annule le pointeur en cours de route, et la raquette
+     ne suit plus le doigt au-delà des premiers pixels. */
+  touch-action: none;
 }
 
 .jeu:focus-visible {
@@ -98,6 +102,14 @@ html[data-casse-briques] {
   color: var(--texte-doux);
   text-transform: none;
   letter-spacing: 0;
+}
+
+/* Sur un téléphone, l'aide au clavier ne sert à personne, et elle ferait
+   passer le bandeau sur trois lignes — autant de terrain en moins. */
+@media (max-width: 40rem) {
+  .jeu__aide {
+    display: none;
+  }
 }
 
 .jeu__panneau {

@@ -47,6 +47,11 @@ le fait qu'elles gardent leur place dans le flux en disparaissant, sinon la
 page se réagencerait sous la balle à chaque impact. Quitter (Échap) rend la
 page exacte : les compétences repoussent.
 
+La raquette suit le doigt, le pointeur ou les flèches. Le terrain s'arrête
+au bord inférieur du bandeau d'état, mesuré à chaque redimensionnement : le
+haut de l'écran ne lui appartient pas, et une balle qui rebondit derrière un
+bandeau opaque est une balle qu'on a perdue.
+
 ### Le rapport de tests
 
 On tape `tdd` n'importe où sur la page — la console le souffle à qui
