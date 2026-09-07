@@ -33,6 +33,10 @@ import '../styles/casse-briques.css';
     let precedent = 0;
 
     nom.addEventListener('click', (evenement) => {
+      // Un œuf de Pâques à la fois : le second se déclencherait par-dessus le
+      // premier, et rien dans les deux ne prévoit de partager l'écran.
+      if (document.querySelector('.jeu, .tests')) return;
+
       const maintenant = evenement.timeStamp;
       clics = maintenant - precedent > DELAI_MAX ? 1 : clics + 1;
       precedent = maintenant;

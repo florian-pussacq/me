@@ -1,0 +1,220 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ *  RAPPORT DE TESTS — l'habillage du bandeau.
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Importée par `scripts/rapport-de-tests.ts`, donc embarquée dans le même
+ * morceau que le moteur : une visite qui ne tape jamais « tdd » ne la
+ * télécharge pas. C'est la différence avec la feuille du casse-briques, qui
+ * doit être là avant le déclenchement pour animer l'indice.
+ *
+ * Le bandeau occupe le bas de l'écran et laisse la page visible au-dessus :
+ * les tests soulignent ce qu'ils lisent, et on doit pouvoir le voir.
+ *
+ * Deux couleurs, comme le reste du site : l'encre pour ce qui passe,
+ * l'accent pour ce qui échoue. Pas de vert — il n'existe pas dans ce thème,
+ * et un rapport de tests n'est pas une raison d'y ajouter une couleur.
+ */
+
+/* ── Ce que le test est en train de lire ───────────────────────────── */
+
+.tests-inspecte {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ── Le bandeau ────────────────────────────────────────────────────── */
+
+.tests {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  /* Hauteur fixe, et non `max-height` : un bandeau qui grandit à chaque
+     ligne ferait sauter le bas de la page pendant toute l'exécution. */
+  height: min(52vh, 26rem);
+  border-top: 4px solid var(--texte);
+  background: var(--fond-eleve);
+  font-family: var(--pol-mono);
+  font-size: var(--t-petit);
+  line-height: 1.5;
+}
+
+.tests:focus-visible {
+  outline: none;
+}
+
+.tests__entete {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem clamp(0.75rem, 4vw, 1.5rem);
+  border-bottom: 2px solid var(--texte);
+}
+
+.tests__commande {
+  font-weight: 700;
+}
+
+.tests__portee {
+  font-weight: 400;
+  color: var(--texte-doux);
+}
+
+.tests__fermer {
+  flex: none;
+  padding: 0.3rem 0.7rem;
+  border: 2px solid var(--texte);
+  background: var(--fond);
+  color: var(--texte);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tests__fermer:hover {
+  background: var(--accent);
+  color: var(--sur-accent);
+}
+
+/* ── La liste ──────────────────────────────────────────────────────── */
+
+.tests__liste {
+  flex: 1;
+  /* Sans cette borne, un élément de grille flexible refuse de rétrécir
+     sous la taille de son contenu, et c'est la page qui défile. */
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.75rem clamp(0.75rem, 4vw, 1.5rem) 1.25rem;
+  /* Un journal saute à la dernière ligne, il ne l'accompagne pas : le
+     défilement doux prendrait du retard sur les tests qui s'enchaînent. */
+  scroll-behavior: auto;
+}
+
+.tests__fichier {
+  margin-top: 0.9rem;
+  color: var(--texte-doux);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: var(--t-menu);
+}
+
+.tests__fichier:first-child {
+  margin-top: 0;
+}
+
+.tests__ligne {
+  display: grid;
+  grid-template-columns: 1.2rem 1fr auto;
+  align-items: baseline;
+  column-gap: 0.5rem;
+  padding: 0.15rem 0;
+}
+
+.tests__ligne--attente {
+  color: var(--texte-doux);
+}
+
+.tests__ligne--ko {
+  margin: 0.35rem -0.5rem;
+  padding: 0.4rem 0.5rem;
+  border-left: 4px solid var(--accent);
+  background: var(--fond);
+}
+
+.tests__marque {
+  font-weight: 700;
+}
+
+.tests__ligne--ko .tests__marque {
+  color: var(--accent-texte);
+}
+
+.tests__nom {
+  overflow-wrap: anywhere;
+}
+
+.tests__temps {
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--t-menu);
+}
+
+.tests__detail,
+.tests__note {
+  grid-column: 2 / -1;
+  color: var(--texte-doux);
+  font-size: var(--t-menu);
+}
+
+.tests__ligne--ko .tests__detail {
+  color: var(--accent-texte);
+  font-weight: 700;
+}
+
+.tests__note {
+  max-width: var(--mesure);
+  margin-top: 0.3rem;
+  font-family: var(--pol-corps);
+  text-wrap: pretty;
+}
+
+.tests__correctif {
+  grid-column: 2 / -1;
+  justify-self: start;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.9rem;
+  border: 3px solid var(--texte);
+  box-shadow: 4px 4px 0 var(--accent);
+  background: var(--fond);
+  color: var(--texte);
+  font: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.tests__correctif:hover {
+  background: var(--texte);
+  color: var(--fond);
+  box-shadow: 0 0 0 var(--accent);
+  transform: translate(4px, 4px);
+}
+
+/* Sur un téléphone, l'en-tête n'a de place que pour la commande. */
+@media (max-width: 30rem) {
+  .tests__portee {
+    display: none;
+  }
+}
+
+/* ── Le bilan ──────────────────────────────────────────────────────── */
+
+.tests__bilan {
+  padding: 0.6rem clamp(0.75rem, 4vw, 1.5rem);
+  border-top: 2px solid var(--texte);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.tests__bilan:empty {
+  display: none;
+}
+
+.tests__bilan--ok {
+  background: var(--texte);
+  color: var(--fond);
+}
+
+/* Encre sur accent, et non fond sur accent : le crème sur l'orange tombe à
+   4,18:1, sous le seuil AA pour du texte de cette taille. Le noir sur
+   l'orange tient 4,69:1. */
+.tests__bilan--ko {
+  background: var(--accent);
+  color: var(--texte);
+}
