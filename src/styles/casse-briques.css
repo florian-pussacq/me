@@ -1,0 +1,173 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ *  CASSE-BRIQUES — l'habillage du jeu caché.
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Le moteur (`src/scripts/casse-briques.ts`) n'est téléchargé qu'au
+ * déclenchement ; cette feuille, elle, part avec la page. Elle est donc
+ * tenue courte, et elle ne pose AUCUNE couleur en dur : comme le reste du
+ * site, elle consomme les jetons du thème actif.
+ *
+ * Tout est porté par `[data-casse-briques]`, posé sur `<html>` le temps de
+ * la partie. Hors partie, ce fichier ne s'applique qu'à une seule chose :
+ * le tremblement du nom au troisième clic, qui dit qu'il se passe quelque
+ * chose sans dire quoi.
+ */
+
+/* ── L'indice ──────────────────────────────────────────────────────── */
+
+/*
+ * À partir du troisième clic, le nom bascule. C'est tout l'indice : assez
+ * pour comprendre que la page réagit, pas assez pour dire à quoi. Le
+ * mouvement disparaît de lui-même sous `prefers-reduced-motion` — la règle
+ * globale de `base.css` ramène toutes les transitions à zéro.
+ */
+.entete__nom {
+  transition: transform 0.12s ease-out;
+}
+
+.entete__nom.est-chatouille {
+  transform: rotate(-1.5deg) translateY(-2px);
+}
+
+/* ── Page en partie ────────────────────────────────────────────────── */
+
+html[data-casse-briques] {
+  overflow: hidden;
+}
+
+/*
+ * Les briques sont les étiquettes elles-mêmes. On les passe en aplat plein
+ * — texte du fond sur l'encre du thème, soit le contraste maximal
+ * disponible — pour qu'on lise un terrain de jeu là où on lisait une liste
+ * de technologies.
+ */
+[data-casse-briques] .jeu-brique {
+  background: var(--texte);
+  color: var(--fond);
+  border-color: var(--texte);
+  transition:
+    background 0.2s ease-out,
+    color 0.2s ease-out;
+}
+
+[data-casse-briques] .jeu-brique--cassee {
+  /* `opacity` et non `display` : la brique disparaît, sa place reste. Sinon
+     la page se réagence sous la balle à chaque impact. */
+  animation: jeu-briser 0.24s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes jeu-briser {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.6) rotate(-6deg);
+  }
+}
+
+/* ── Couche de jeu ─────────────────────────────────────────────────── */
+
+.jeu {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.jeu:focus-visible {
+  outline: none;
+}
+
+.jeu__toile {
+  display: block;
+  /* La raquette suit le pointeur : le curseur ferait doublon. */
+  cursor: none;
+}
+
+.jeu__hud {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem clamp(0.75rem, 4vw, 1.5rem);
+  border-bottom: 3px solid var(--texte);
+  background: var(--fond-eleve);
+  font-family: var(--pol-mono);
+  font-size: var(--t-petit);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+
+.jeu__compteur {
+  font-weight: 700;
+}
+
+.jeu__aide {
+  margin-left: auto;
+  color: var(--texte-doux);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.jeu__panneau {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(28rem, calc(100vw - 2rem));
+  padding: calc(var(--pas) * 1.5);
+  border: 3px solid var(--texte);
+  box-shadow: 8px 8px 0 var(--accent);
+  background: var(--fond-eleve);
+  text-align: center;
+}
+
+.jeu__titre {
+  font-family: var(--pol-titre);
+  font-weight: 900;
+  font-size: var(--t-titre);
+  text-transform: uppercase;
+  letter-spacing: 0;
+  word-spacing: 0.1em;
+}
+
+.jeu__texte {
+  margin-top: 0.5rem;
+  color: var(--texte-doux);
+  font-size: var(--t-petit);
+}
+
+.jeu__actions {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: calc(var(--pas) * 1.25);
+}
+
+.jeu__bouton {
+  padding: 0.5rem 1rem;
+  border: 3px solid var(--texte);
+  box-shadow: 4px 4px 0 var(--texte);
+  background: var(--fond);
+  color: var(--texte);
+  font: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.jeu__bouton:hover {
+  background: var(--accent);
+  color: var(--sur-accent);
+  box-shadow: 0 0 0 var(--texte);
+  transform: translate(4px, 4px);
+}
