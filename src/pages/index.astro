@@ -5,6 +5,7 @@ import Section from '../components/Section.astro';
 import Parcours from '../components/Parcours.astro';
 import Liens from '../components/Liens.astro';
 import CasseBriques from '../components/CasseBriques.astro';
+import RapportDeTests from '../components/RapportDeTests.astro';
 import { profil } from '../data/profil';
 import { annee } from '../lib/dates';
 
@@ -106,8 +107,10 @@ const debutCarriere = premierPoste ? annee(premierPoste.debut) : null;
   </footer>
 
   {
-    /* Ne rend rien : cinq clics sur le nom lancent un casse-briques dont les
-      briques sont les étiquettes de la section « Compétences ». */
+    /* Ne rendent rien. Cinq clics sur le nom lancent un casse-briques dont
+      les briques sont les étiquettes de la section « Compétences » ; taper
+      « tdd » ouvre le rapport de tests de la page. */
   }
   <CasseBriques />
+  <RapportDeTests />
 </Base>

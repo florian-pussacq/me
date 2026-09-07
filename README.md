@@ -30,7 +30,11 @@ donnée mal formée fait échouer `npm run build`, pas la mise en ligne. Vérifi
 format des dates, cohérence des périodes, ordre du parcours, longueur de la
 description.
 
-## Le jeu caché
+## Ce qui est caché dans la page
+
+Deux choses, qui finissent par se rejoindre.
+
+### Le casse-briques
 
 Cinq clics sur le nom, en haut de page, et les étiquettes de la section
 « Compétences » deviennent les briques d'un casse-briques. Le nom bascule
@@ -43,16 +47,37 @@ le fait qu'elles gardent leur place dans le flux en disparaissant, sinon la
 page se réagencerait sous la balle à chaque impact. Quitter (Échap) rend la
 page exacte : les compétences repoussent.
 
-| Fichier                         | Rôle                                  |
-| ------------------------------- | ------------------------------------- |
-| `components/CasseBriques.astro` | Le compteur de clics, et rien d'autre |
-| `scripts/casse-briques.ts`      | Le moteur, chargé à la demande        |
-| `styles/casse-briques.css`      | L'habillage, en jetons du thème       |
+### Le rapport de tests
 
-Ce que ça coûte à une visite qui ne le déclenche jamais : 0,9 ko compressé
-de compteur de clics, plus la feuille de style. Le moteur (2,6 ko compressé)
-part dans un module séparé, importé dynamiquement au cinquième clic : il
-n'est jamais téléchargé autrement.
+On tape `tdd` n'importe où sur la page — la console le souffle à qui
+l'ouvre — et un bandeau de test runner s'ouvre en bas de l'écran.
+
+Les quatorze tests sont vrais. Ils lisent le DOM affiché, calculent les
+rapports de contraste à partir des couleurs réellement appliquées par le
+navigateur, interrogent l'API Performance sur ce qui a été téléchargé.
+Aucun verdict n'est écrit d'avance : cassez l'ordre du parcours, ajoutez une
+police distante, et le rapport devient rouge. Chaque test souligne dans la
+page les éléments qu'il inspecte pendant qu'il tourne — c'est la seule
+preuve honnête qu'il lit bien quelque chose.
+
+Le dernier échoue, toujours : `page.neChargeAucunJavaScript()`. Il ne peut
+pas en être autrement, puisqu'il a fallu charger un module pour l'afficher.
+Son bouton **Corriger** ne corrige rien. Il lance le casse-briques.
+
+| Fichier                           | Rôle                                    |
+| --------------------------------- | --------------------------------------- |
+| `components/CasseBriques.astro`   | Le compteur de clics, et rien d'autre   |
+| `components/RapportDeTests.astro` | Le compteur de touches, et rien d'autre |
+| `scripts/casse-briques.ts`        | Le moteur du jeu, chargé à la demande   |
+| `scripts/rapport-de-tests.ts`     | Les assertions, chargées à la demande   |
+| `styles/casse-briques.css`        | L'habillage du jeu, en jetons du thème  |
+| `styles/rapport-de-tests.css`     | L'habillage du bandeau, idem            |
+
+Ce que ça coûte à une visite qui ne déclenche rien : environ 1,5 ko
+compressé — deux compteurs et l'aide de préchargement de Vite — plus la
+feuille de style du jeu, seule à devoir être là avant son déclenchement pour
+animer l'indice. Les deux moteurs (2,6 et 4,4 ko compressés) partent dans
+des modules séparés, importés au moment où on les demande.
 
 ## Déploiement
 
@@ -63,9 +88,8 @@ formatage, les types, les contrastes ou le contenu ne passent pas.
 ## Pourquoi ces choix
 
 - **Astro + TypeScript strict** : HTML statique. Le seul JavaScript de la
-  page compte cinq clics sur le nom ; le reste — le casse-briques — n'est
-  téléchargé que si on le déclenche. Pas de Next.js (ni serveur, ni route,
-  ni état à gérer ici).
+  page compte des clics et des touches ; le reste n'est téléchargé que si on
+  le déclenche. Pas de Next.js (ni serveur, ni route, ni état à gérer ici).
 - **Contenu typé, séparé du rendu** : `profil.ts` + Zod, sans dépendance
   supplémentaire (`astro/zod`).
 - **Une page** : une carte de visite, pas un site.
@@ -73,7 +97,9 @@ formatage, les types, les contrastes ou le contenu ne passent pas.
   fournit les valeurs.
 - **Polices auto-hébergées** : pas de requête vers Google Fonts.
 - **Pas d'ESLint, pas de tests unitaires** : pas de logique métier à tester.
-  Le contenu est vérifié par son schéma, les contrastes par leur script. Le
-  casse-briques, lui, a été vérifié dans un navigateur — collisions, vies,
-  fin de partie, sortie propre — mais son harnais n'a pas sa place dans le
-  dépôt d'une carte de visite.
+  Le contenu est vérifié par son schéma, les contrastes par leur script, et
+  le reste par le rapport de tests — qui a l'avantage de s'exécuter sur la
+  page publiée plutôt que sur une copie en mémoire. Les deux œufs de Pâques
+  ont été vérifiés dans un navigateur (collisions, fins de partie, sortie
+  propre, verdicts de chaque assertion), mais ce harnais n'a pas sa place
+  dans le dépôt d'une carte de visite.

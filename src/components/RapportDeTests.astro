@@ -1,0 +1,46 @@
+---
+/**
+ * Le déclencheur du rapport de tests : on tape « tdd » sur la page.
+ *
+ * Comme `CasseBriques.astro`, ce composant ne rend aucun HTML et n'embarque
+ * qu'un compteur — ici de touches. Le moteur, ses assertions et sa feuille
+ * de style partent dans un module importé au moment où le code est saisi.
+ *
+ * Pourquoi le clavier plutôt qu'un élément à cliquer : ce rapport ne
+ * s'adresse pas au même public que le casse-briques. Il parle à quelqu'un
+ * qui lit du code, et c'est aussi à lui que s'adresse la ligne écrite dans
+ * la console — le seul endroit où on peut laisser un indice sans encombrer
+ * la page de ceux que ça n'intéresse pas.
+ */
+---
+
+<script>
+  const CODE = 'tdd';
+
+  let saisie = '';
+
+  window.addEventListener('keydown', (evenement) => {
+    // Une combinaison n'est pas une frappe : `Ctrl+D` ne doit pas compter.
+    if (evenement.ctrlKey || evenement.metaKey || evenement.altKey) return;
+    if (evenement.key.length !== 1) return;
+
+    // Un œuf de Pâques à la fois : le second se déclencherait par-dessus le
+    // premier, et rien dans les deux ne prévoit de partager l'écran.
+    if (document.querySelector('.jeu, .tests')) return;
+
+    saisie = (saisie + evenement.key.toLowerCase()).slice(-CODE.length);
+    if (saisie !== CODE) return;
+
+    saisie = '';
+    void import('../scripts/rapport-de-tests').then(({ ouvrirRapport }) => {
+      ouvrirRapport();
+    });
+  });
+
+  // Une ligne, une seule. Ceux qui ouvrent la console de la page d'un
+  // développeur cherchent précisément ce genre de chose.
+  console.info(
+    '%cCette page passe ses propres tests. Tapez « tdd » pour voir le rapport.',
+    'font: 600 13px ui-monospace, SFMono-Regular, Menlo, monospace',
+  );
+</script>
