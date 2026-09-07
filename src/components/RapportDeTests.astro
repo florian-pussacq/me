@@ -33,7 +33,7 @@ import '../styles/declencheurs.css';
   function ouvrir(): void {
     // Un œuf de Pâques à la fois : le second se déclencherait par-dessus le
     // premier, et rien dans les deux ne prévoit de partager l'écran.
-    if (document.querySelector('.jeu, .tests')) return;
+    if (document.querySelector('.jeu, .tests, .epoques')) return;
 
     void import('../scripts/rapport-de-tests').then(({ ouvrirRapport }) => {
       ouvrirRapport();
@@ -77,7 +77,10 @@ import '../styles/declencheurs.css';
 
     pied.addEventListener('pointerdown', (evenement) => {
       if (evenement.button !== 0) return;
-      if (document.querySelector('.jeu, .tests')) return;
+      // Le pied de page porte aussi le bouton 3615 : un appui dessus lui
+      // appartient, et ne doit pas armer l'appui long par-dessus.
+      if ((evenement.target as HTMLElement).closest('button, a')) return;
+      if (document.querySelector('.jeu, .tests, .epoques')) return;
 
       depart = { x: evenement.clientX, y: evenement.clientY };
       pied.classList.add('est-pressee');

@@ -6,6 +6,7 @@ import Parcours from '../components/Parcours.astro';
 import Liens from '../components/Liens.astro';
 import CasseBriques from '../components/CasseBriques.astro';
 import RapportDeTests from '../components/RapportDeTests.astro';
+import Epoques from '../components/Epoques.astro';
 import { profil } from '../data/profil';
 import { annee } from '../lib/dates';
 
@@ -104,12 +105,19 @@ const debutCarriere = premierPoste ? annee(premierPoste.debut) : null;
         identite.localisation
       }
     </p>
+
+    {
+      /* Le seul des trois œufs de Pâques qui se voie : un code de service
+        Vidéotex ne se cachait pas. */
+    }
+    <Epoques />
   </footer>
 
   {
     /* Ne rendent rien. Cinq clics sur le nom lancent un casse-briques dont
       les briques sont les étiquettes de la section « Compétences » ; taper
-      « tdd » ouvre le rapport de tests de la page. */
+      « tdd » ouvre le rapport de tests de la page. Le 3615 du pied de page,
+      lui, se voit. */
   }
   <CasseBriques />
   <RapportDeTests />

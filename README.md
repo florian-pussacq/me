@@ -30,9 +30,9 @@ donnée mal formée fait échouer `npm run build`, pas la mise en ligne. Vérifi
 format des dates, cohérence des périodes, ordre du parcours, longueur de la
 description.
 
-## Ce qui est caché dans la page
+## Les trois écarts
 
-Deux choses, qui finissent par se rejoindre.
+Trois choses en plus de la page. Deux sont cachées, la troisième se voit.
 
 ### Le casse-briques
 
@@ -74,22 +74,62 @@ Le dernier échoue, toujours : `page.neChargeAucunJavaScript()`. Il ne peut
 pas en être autrement, puisqu'il a fallu charger un module pour l'afficher.
 Son bouton **Corriger** ne corrige rien. Il lance le casse-briques.
 
-| Fichier                           | Rôle                                                                |
-| --------------------------------- | ------------------------------------------------------------------- |
-| `components/CasseBriques.astro`   | Le compteur de clics, et rien d'autre                               |
-| `components/RapportDeTests.astro` | Les deux gestes, et rien d'autre                                    |
-| `scripts/casse-briques.ts`        | Le moteur du jeu, chargé à la demande                               |
-| `scripts/rapport-de-tests.ts`     | Les assertions, chargées à la demande                               |
-| `styles/declencheurs.css`         | Les deux indices — la seule feuille des trois à partir avec la page |
-| `styles/casse-briques.css`        | L'habillage du jeu, avec son moteur                                 |
-| `styles/rapport-de-tests.css`     | L'habillage du bandeau, avec le sien                                |
+### 3615 PUSSACQ
 
-Ce que ça coûte à une visite qui ne déclenche rien : 1,8 ko compressé de
-JavaScript — deux compteurs de gestes et l'aide de préchargement de Vite —
-et les quelques lignes de `declencheurs.css`. Une feuille de style ne peut
-pas attendre le déclenchement quand c'est elle qui l'annonce ; les deux
-autres, elles, voyagent avec leur moteur (2,6 et 4,4 ko compressés) et ne
-sont téléchargées que si on va les chercher.
+Un bouton visible, dans le pied de page. Un code de service Vidéotex ne se
+cachait pas : il s'affichait en bas des publicités et des génériques, et
+c'était toute son élégance. C'est aussi le seul des trois qu'un doigt trouve
+sans rien savoir.
+
+Il ouvre un curseur à trois arrêts, qu'on fait glisser :
+
+- **1985** — le même profil sur Minitel. Quarante colonnes sur vingt-quatre
+  lignes, menus numérotés à points de conduite, une page à la fois, touches
+  SOMMAIRE / RETOUR / SUITE. Le texte arrive à **cent vingt caractères par
+  seconde** : mille deux cents bits sur dix bits par caractère, le débit du
+  Minitel 1. Une page pleine met huit secondes. Ce n'est pas un effet, c'est
+  la seule façon de faire sentir ce que « lent » voulait dire — et un
+  toucher l'affiche d'un coup, parce qu'on n'inflige pas 1985 à quelqu'un.
+- **2026** — cette page. La scène se vide, l'habillage laisse passer les
+  clics, le défilement se débloque. C'est ce qui fait tenir l'ensemble : on
+  ne compare pas deux pastiches, on les compare à un original qui est sous
+  les yeux.
+- **2067** — le profil lu par une machine. Deux agents s'accordent sur ce
+  que la page affirme et se quittent, en quatre cent douze microsecondes.
+  Il faut ralentir la trace de dix-sept mille fois pour qu'un œil humain en
+  voie quelque chose. Le miroir exact de 1985 : aucune des deux époques
+  n'est à la vitesse de son lecteur, celle du milieu si.
+
+Les chiffres de 2067 ne sont pas décoratifs — ils sont comptés dans les
+données `schema.org/Person` que la page publie déjà, et la cohérence du
+parcours y est vérifiée, pas affirmée. L'échange se termine sur la seule
+question qui compte en entretien, celle qu'aucune donnée structurée ne
+portera jamais. La réponse est un `204`, et une adresse. C'est déjà la
+conclusion de la page « Me joindre » du Minitel, quatre-vingt-deux ans plus
+tôt.
+
+Techniquement, la traversée est la démonstration du choix d'architecture du
+site : `profil.ts` ne sait pas comment il est rendu. Les trois époques
+relisent la même page — via `donnees.ts` — et rien n'est dupliqué. Modifier
+le contenu les déplace toutes les trois.
+
+### Ce que ça coûte
+
+| Fichier                           | Rôle                                       |
+| --------------------------------- | ------------------------------------------ |
+| `components/CasseBriques.astro`   | Le compteur de clics                       |
+| `components/RapportDeTests.astro` | Les deux gestes du rapport                 |
+| `components/Epoques.astro`        | Le bouton 3615, et lui seul                |
+| `scripts/casse-briques.ts`        | Le moteur du jeu                           |
+| `scripts/rapport-de-tests.ts`     | Les assertions                             |
+| `scripts/epoques/`                | La traversée : coquille, Minitel, agents   |
+| `styles/declencheurs.css`         | Les indices — la seule feuille toujours là |
+
+Une visite qui ne déclenche rien télécharge **2,1 ko compressé** de
+JavaScript : trois compteurs de gestes et l'aide de préchargement de Vite.
+Une feuille de style ne peut pas attendre le déclenchement quand c'est elle
+qui l'annonce ; les trois autres voyagent avec leur moteur (2,7, 4,4 et
+6,0 ko compressés) et ne sont téléchargées que si on va les chercher.
 
 ## Déploiement
 
@@ -102,6 +142,9 @@ formatage, les types, les contrastes ou le contenu ne passent pas.
 - **Astro + TypeScript strict** : HTML statique. Le seul JavaScript de la
   page compte des clics et des touches ; le reste n'est téléchargé que si on
   le déclenche. Pas de Next.js (ni serveur, ni route, ni état à gérer ici).
+- **Le contenu ne sait pas comment il est rendu** : c'est ce qui permet à un
+  Minitel, à une page brutaliste et à une trace inter-agents d'afficher le
+  même profil sans qu'une ligne de texte soit écrite deux fois.
 - **Contenu typé, séparé du rendu** : `profil.ts` + Zod, sans dépendance
   supplémentaire (`astro/zod`).
 - **Une page** : une carte de visite, pas un site.

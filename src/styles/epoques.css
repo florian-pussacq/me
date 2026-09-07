@@ -1,0 +1,450 @@
+/*
+ * ═══════════════════════════════════════════════════════════════════════
+ *  LA TRAVERSÉE — habillage des trois époques.
+ * ═══════════════════════════════════════════════════════════════════════
+ *
+ * Embarquée avec son moteur : une visite qui n'ouvre pas le 3615 ne la
+ * télécharge jamais.
+ *
+ * Trois régimes visuels dans un seul fichier, parce qu'ils n'ont de sens
+ * que les uns par rapport aux autres :
+ *
+ * — 1985 tient dans une grille. Tout y est aligné au caractère, et rien
+ *   n'y respire.
+ * — 2026 n'est pas habillé ici : c'est la page, et elle se montre au
+ *   travers.
+ * — 2067 est l'exact contraire de 1985 : pas de grille, pas de cadre, de
+ *   l'espace partout, une composition qui n'a plus à tenir dans un tube.
+ *
+ * Le fond du Minitel est la seule couleur en dur du site. C'est assumé :
+ * ce n'est pas une couleur de thème, c'est la couleur d'un tube cathodique
+ * éteint, et elle ne doit pas suivre le thème.
+ */
+
+/* ── La coquille ───────────────────────────────────────────────────── */
+
+html[data-epoques='0'],
+html[data-epoques='2'] {
+  overflow: hidden;
+}
+
+.epoques {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+}
+
+.epoques:focus-visible {
+  outline: none;
+}
+
+/* Au présent, la scène est vide : la page reprend la main, clics compris.
+   Seule la barre reste attrapable. */
+.epoques[data-epoque='1'] {
+  pointer-events: none;
+}
+
+.epoques[data-epoque='1'] .epoques__barre {
+  pointer-events: auto;
+}
+
+.epoques__scene {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── Le curseur ────────────────────────────────────────────────────── */
+
+.epoques__barre {
+  flex: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 0.6rem;
+  padding: 0.75rem clamp(0.75rem, 4vw, 1.5rem) calc(0.75rem + env(safe-area-inset-bottom));
+  border-top: 4px solid var(--texte);
+  background: var(--fond-eleve);
+  font-family: var(--pol-mono);
+}
+
+.epoques__legende {
+  font-size: var(--t-menu);
+  color: var(--texte-doux);
+  text-wrap: pretty;
+  min-height: 2.4em;
+}
+
+.epoques__rail {
+  grid-column: 1 / -1;
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 3px solid var(--texte);
+  background: var(--fond);
+  /* C'est un curseur qu'on fait glisser : le navigateur ne doit pas
+     confisquer le geste pour en faire un défilement. */
+  touch-action: none;
+}
+
+.epoques__pastille {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: calc(100% / 3);
+  background: var(--accent);
+  transform: translateX(calc(var(--rang, 0) * 100%));
+  transition: transform 0.18s ease-out;
+}
+
+.epoques__arret {
+  position: relative;
+  display: grid;
+  gap: 0.1rem;
+  /* Quarante-quatre pixels : la plus petite cible qu'un doigt atteint sans
+     viser. */
+  min-height: 44px;
+  padding: 0.5rem 0.25rem;
+  border: 0;
+  background: none;
+  color: var(--texte);
+  font: inherit;
+  cursor: pointer;
+}
+
+.epoques__annee {
+  font-weight: 700;
+  font-size: var(--t-petit);
+  letter-spacing: 0.04em;
+}
+
+.epoques__nom {
+  font-size: var(--t-menu);
+  color: var(--texte-doux);
+}
+
+.epoques__arret[aria-pressed='true'] .epoques__nom {
+  /* Sur l'aplat d'accent, le gris doux tombe sous le seuil : on repasse à
+     l'encre, qui tient 4,69:1 sur cet orange. */
+  color: var(--texte);
+}
+
+.epoques__fermer {
+  justify-self: end;
+  padding: 0.4rem 0.9rem;
+  border: 3px solid var(--texte);
+  box-shadow: 4px 4px 0 var(--texte);
+  background: var(--fond);
+  color: var(--texte);
+  font: inherit;
+  font-weight: 700;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.epoques__fermer:hover {
+  background: var(--accent);
+  color: var(--texte);
+  box-shadow: 0 0 0 var(--texte);
+  transform: translate(4px, 4px);
+}
+
+/* ── 1985 ──────────────────────────────────────────────────────────── */
+
+.minitel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #07070a;
+}
+
+.minitel__cadre {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+.minitel__ecran {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(8px, 2.2vmin, 22px);
+  color: #ece9e1;
+  font-family: var(--pol-mono);
+  /* Le halo d'un tube : léger, sinon c'est un filtre Instagram. */
+  text-shadow: 0 0 6px rgb(236 233 225 / 25%);
+}
+
+/* Les lignes de balayage, en surcouche et discrètes. */
+.minitel__ecran::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 22%) 0 1px, transparent 1px 3px);
+}
+
+.minitel__etat {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.15rem 0.4rem;
+  background: #ece9e1;
+  color: #07070a;
+  font-size: var(--t-menu);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-shadow: none;
+}
+
+/* L'aire disponible, dans laquelle le tube se centre. */
+.minitel__zone {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+/* Ligne d'état et grille ne font qu'un bloc, centré dans l'aire. */
+.minitel__tube {
+  margin: auto;
+}
+
+/* Dimensions, taille et interligne sont calculés — voir `ajuster()`. */
+.minitel__lignes {
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+
+.minitel__ligne {
+  white-space: pre;
+}
+
+/*
+ * Une ligne vide est vide : sans contenu, elle ne crée aucune boîte de
+ * ligne et ne prend donc aucune hauteur — la grille de vingt-quatre lignes
+ * s'effondrerait sur les seules lignes écrites. L'espace de largeur nulle
+ * lui rend sa hauteur sans rien afficher.
+ */
+.minitel__ligne::after {
+  content: '\200b';
+}
+
+.minitel__ligne--titre {
+  background: #ece9e1;
+  color: #07070a;
+  text-shadow: none;
+}
+
+.minitel__ligne--entete {
+  font-weight: 700;
+}
+
+.minitel__ligne--discret {
+  color: #8e8b84;
+}
+
+.minitel__ligne--choix {
+  cursor: pointer;
+}
+
+.minitel__ligne--choix:hover,
+.minitel__ligne--choix:active {
+  background: #ece9e1;
+  color: #07070a;
+  text-shadow: none;
+}
+
+.minitel__sonde {
+  position: absolute;
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.minitel__clavier {
+  flex: none;
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem clamp(8px, 2.2vmin, 22px);
+  background: #17171c;
+}
+
+.minitel__touche {
+  flex: 1;
+  min-height: 44px;
+  border: 2px solid #55535c;
+  background: #24242c;
+  color: #ece9e1;
+  font-family: var(--pol-mono);
+  font-size: var(--t-menu);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.minitel__touche:hover:not(:disabled) {
+  background: #ece9e1;
+  color: #07070a;
+}
+
+.minitel__touche:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ── 2067 ──────────────────────────────────────────────────────────── */
+
+.agent {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  background: var(--fond);
+}
+
+.agent__defilement {
+  max-width: 52rem;
+  margin-inline: auto;
+  padding: clamp(1.5rem, 6vw, 4rem) clamp(1rem, 5vw, 3rem) 3rem;
+}
+
+.agent__annonce {
+  font-family: var(--pol-titre);
+  font-weight: 900;
+  font-size: var(--t-titre);
+  text-transform: uppercase;
+  letter-spacing: 0;
+  word-spacing: 0.1em;
+}
+
+.agent__intro {
+  max-width: var(--mesure);
+  margin-top: 0.5rem;
+  color: var(--texte-doux);
+  font-size: var(--t-petit);
+  text-wrap: pretty;
+}
+
+.agent__trace {
+  margin-top: calc(var(--pas) * 2);
+  display: grid;
+  /* Rien ne serre ici : c'est le contraire exact de la grille de 1985. */
+  gap: calc(var(--pas) * 1.75);
+}
+
+.agent__ligne {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.15rem 1rem;
+  animation: agent-apparait 0.35s ease-out both;
+}
+
+@keyframes agent-apparait {
+  from {
+    opacity: 0;
+    transform: translateY(0.4rem);
+  }
+}
+
+.agent__instant {
+  grid-row: 1 / span 3;
+  font-family: var(--pol-mono);
+  font-size: var(--t-menu);
+  color: var(--texte-doux);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.agent__acteur {
+  font-family: var(--pol-mono);
+  font-size: var(--t-menu);
+  color: var(--texte-doux);
+  letter-spacing: 0.02em;
+}
+
+.agent__ligne--reponse .agent__acteur {
+  color: var(--accent-texte);
+}
+
+.agent__intitule {
+  font-size: var(--t-corps);
+  text-wrap: pretty;
+}
+
+.agent__detail {
+  max-width: var(--mesure);
+  color: var(--texte-doux);
+  font-size: var(--t-petit);
+  text-wrap: pretty;
+}
+
+.agent__ligne--ouverte {
+  padding-left: 1rem;
+  margin-left: -1rem;
+  border-left: 4px solid var(--accent);
+}
+
+.agent__ligne--ouverte .agent__intitule {
+  font-family: var(--pol-titre);
+  font-weight: 900;
+  font-size: var(--t-poste);
+}
+
+.agent__canal {
+  grid-column: 2;
+  justify-self: start;
+  margin-top: 0.75rem;
+  padding: 0.5rem 1rem;
+  border: 3px solid var(--texte);
+  box-shadow: 4px 4px 0 var(--accent);
+  font-weight: 700;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-size: var(--t-petit);
+  letter-spacing: 0.02em;
+}
+
+.agent__canal:hover {
+  background: var(--texte);
+  color: var(--fond);
+  box-shadow: 0 0 0 var(--accent);
+  transform: translate(4px, 4px);
+}
+
+.agent__bilan {
+  margin-top: calc(var(--pas) * 2.5);
+  padding-top: calc(var(--pas) * 1.25);
+  border-top: 2px solid var(--trait);
+  font-family: var(--pol-mono);
+  font-size: var(--t-menu);
+  color: var(--texte-doux);
+  text-wrap: pretty;
+}
+
+.agent__bilan:empty {
+  display: none;
+}
+
+/* Sur un téléphone, la marge des horodatages mange la moitié de la
+   largeur : la trace passe en deux niveaux plutôt qu'en deux colonnes. */
+@media (max-width: 34rem) {
+  .agent__ligne {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .agent__instant {
+    grid-row: auto;
+    text-align: left;
+  }
+
+  .agent__canal {
+    grid-column: 1;
+  }
+}

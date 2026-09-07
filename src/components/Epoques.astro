@@ -1,0 +1,34 @@
+---
+/**
+ * Le 3615 du pied de page, et la traversée qu'il ouvre.
+ *
+ * Contrairement aux deux autres œufs, celui-ci se voit. C'est délibéré :
+ * un code de service Vidéotex ne se cachait pas, il s'affichait en bas des
+ * publicités et des génériques, et c'était toute son élégance. Et c'est le
+ * seul des trois qu'un doigt trouve sans rien savoir.
+ *
+ * Le composant rend un vrai bouton — pas une ligne de texte détournée : il
+ * doit s'atteindre au clavier, s'annoncer aux lecteurs d'écran, et ne pas
+ * déclencher l'appui long du rapport de tests qui vit sur le même pied de
+ * page.
+ */
+import '../styles/declencheurs.css';
+---
+
+<button type="button" class="pied__3615">
+  3615 PUSSACQ
+  <span class="pied__glose"> — le même profil en 1985, ici, et en 2067</span>
+</button>
+
+<script>
+  const bouton = document.querySelector<HTMLElement>('.pied__3615');
+
+  bouton?.addEventListener('click', () => {
+    // Un œuf de Pâques à la fois : les trois se disputeraient l'écran.
+    if (document.querySelector('.jeu, .tests, .epoques')) return;
+
+    void import('../scripts/epoques/epoques').then(({ ouvrirEpoques }) => {
+      ouvrirEpoques();
+    });
+  });
+</script>

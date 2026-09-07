@@ -67,3 +67,40 @@
   width: 100%;
   transition: width var(--pied-appui, 600ms) linear;
 }
+
+/* ── Le 3615, dans le pied de page ─────────────────────────────────── */
+
+/*
+ * Un code de service, pas un bouton d'appel à l'action : monospace, petit,
+ * et le cadre franc du thème. Il se voit, il ne s'impose pas.
+ */
+.pied__3615 {
+  padding: 0.25rem 0.6rem;
+  border: 2px solid var(--texte);
+  background: var(--fond);
+  color: var(--texte);
+  font-family: var(--pol-mono);
+  font-size: var(--t-menu);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+}
+
+.pied__3615:hover {
+  background: var(--texte);
+  color: var(--fond);
+}
+
+/*
+ * « 3615 PUSSACQ » ne dit rien à qui ne voit pas l'écran. La glose complète
+ * le nom accessible du bouton sans encombrer la page de ceux qui le lisent.
+ */
+.pied__glose {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
