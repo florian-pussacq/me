@@ -1,5 +1,5 @@
 /**
- * Le peu de plomberie DOM que les trois modules de la traversée partagent.
+ * Le peu de plomberie DOM que les modules de la traversée partagent.
  *
  * `requis` existe parce que le typage strict et les fonctions déclarées ne
  * s'entendent pas : une garde `if (!element) return` n'affine rien à

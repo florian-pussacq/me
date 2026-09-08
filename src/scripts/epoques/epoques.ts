@@ -1,60 +1,38 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════
- *  LA TRAVERSÉE — 1985, cette page, 2067.
+ *  LA TRAVERSÉE — 1985, cette page, 2077.
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Un curseur, trois arrêts, un seul contenu.
  *
- * L'arrêt du milieu n'est pas une reconstitution : c'est la page elle-même,
- * qu'on voit au travers dès que le curseur s'y pose. C'est ce qui fait
- * tenir l'ensemble — on ne compare pas deux pastiches, on compare deux
- * pastiches À un original, et l'original est sous vos yeux.
+ * Les arrêts 2026 et 2077 ne sont pas des reconstitutions : c'est la page
+ * elle-même, qu'on voit au travers dès que le curseur s'y pose — intacte
+ * pour le premier, en morceaux pour le second.
  *
- * Ce que la traversée raconte tient dans l'écart des vitesses. En 1985, une
- * page mettait huit secondes à arriver parce que la ligne ne savait pas
- * faire mieux. En 2067, l'échange entier tient dans quatre cents
- * microsecondes et personne ne le lit. Entre les deux, une page écrite pour
- * être lue par quelqu'un.
- *
- * Techniquement, c'est la démonstration du choix d'architecture du site :
- * `profil.ts` ne sait pas comment il est rendu. Trois moteurs relisent la
- * même page — via `donnees.ts` — et rien n'est dupliqué. Modifier le
- * contenu déplace les trois époques du même coup.
+ * `profil.ts` ne sait pas comment il est rendu : le Minitel relit la page
+ * via `donnees.ts`, sans qu'une ligne de contenu soit écrite deux fois.
  */
 import '../../styles/epoques.css';
 import { requis } from './dom';
 import { lireProfil } from './donnees';
 import { creerMinitel, type Minitel } from './minitel';
-import { creerAgent, type VueAgent } from './agent';
+import { creerBugs, type VueBugs } from './bugs';
 
 const ATTRIBUT = 'data-epoques';
 
 interface Arret {
   readonly annee: string;
   readonly nom: string;
-  readonly legende: string;
 }
 
 const ARRETS: readonly Arret[] = [
-  {
-    annee: '1985',
-    nom: 'Minitel',
-    legende: '40 colonnes, 1 200 bauds. Huit secondes pour une page pleine.',
-  },
-  {
-    annee: '2026',
-    nom: 'Cette page',
-    legende: 'La seule des trois qui soit écrite à la vitesse de son lecteur.',
-  },
-  {
-    annee: '2067',
-    nom: 'Agents',
-    legende: 'Quatre cents microsecondes, et plus personne pour la lire.',
-  },
+  { annee: '1985', nom: 'Minitel' },
+  { annee: '2026', nom: 'Cette page' },
+  { annee: '2077', nom: 'Patch 1.0' },
 ];
 
-/** L'arrêt du milieu : la page elle-même, sans rien par-dessus. */
-const PRESENT = 1;
+/** Les arrêts qui montrent la page elle-même : elle doit rester parcourable. */
+const SUR_LA_PAGE = new Set([1, 2]);
 
 let ouverte = false;
 
@@ -75,7 +53,6 @@ export function ouvrirEpoques(): void {
   racine.innerHTML = `
     <div class="epoques__scene"></div>
     <div class="epoques__barre">
-      <p class="epoques__legende"></p>
       <div class="epoques__rail" role="group" aria-label="Choisir une époque">
         <span class="epoques__pastille" aria-hidden="true"></span>
         ${ARRETS.map(
@@ -95,14 +72,13 @@ export function ouvrirEpoques(): void {
   const scene = requis<HTMLElement>(racine, '.epoques__scene');
   const rail = requis<HTMLElement>(racine, '.epoques__rail');
   const pastille = requis<HTMLElement>(racine, '.epoques__pastille');
-  const legende = requis<HTMLElement>(racine, '.epoques__legende');
   const fermeture = requis<HTMLButtonElement>(racine, '.epoques__fermer');
 
   const arrets = Array.from(racine.querySelectorAll<HTMLButtonElement>('[data-arret]'));
 
   let epoque = -1;
   let minitel: Minitel | undefined;
-  let agent: VueAgent | undefined;
+  let bugs: VueBugs | undefined;
 
   /**
    * Le défilement du document n'est bloqué qu'en dehors du présent.
@@ -129,8 +105,8 @@ export function ouvrirEpoques(): void {
   function vider(): void {
     minitel?.detruire();
     minitel = undefined;
-    agent?.detruire();
-    agent = undefined;
+    bugs?.detruire();
+    bugs = undefined;
     scene.replaceChildren();
   }
 
@@ -140,20 +116,19 @@ export function ouvrirEpoques(): void {
     epoque = cible;
 
     vider();
-    verrouiller(cible !== PRESENT);
+    verrouiller(!SUR_LA_PAGE.has(cible));
 
     if (cible === 0) {
       minitel = creerMinitel(profil);
       scene.append(minitel.racine);
       minitel.ajuster();
     } else if (cible === 2) {
-      agent = creerAgent(profil);
-      scene.append(agent.racine);
+      bugs = creerBugs();
+      scene.append(bugs.racine);
     }
 
     racine.dataset.epoque = String(cible);
     document.documentElement.setAttribute(ATTRIBUT, String(cible));
-    legende.textContent = ARRETS[cible]?.legende ?? '';
     pastille.style.setProperty('--rang', String(cible));
     for (const [rangArret, bouton] of arrets.entries()) {
       bouton.setAttribute('aria-pressed', String(rangArret === cible));
@@ -186,8 +161,8 @@ export function ouvrirEpoques(): void {
 
   // ── Le curseur ───────────────────────────────────────────────────────
   //
-  // Trois boutons pour le doigt et le clavier, plus un glissement continu
-  // sur le rail : c'est un curseur temporel, on doit pouvoir le faire
+  // Un bouton par arrêt pour le doigt et le clavier, plus un glissement
+  // continu sur le rail : c'est un curseur, on doit pouvoir le faire
   // glisser.
 
   function arretSousLePointeur(x: number): number {

@@ -1,30 +1,25 @@
 /*
  * ═══════════════════════════════════════════════════════════════════════
- *  LA TRAVERSÉE — habillage des trois époques.
+ *  LA TRAVERSÉE — habillage des trois arrêts.
  * ═══════════════════════════════════════════════════════════════════════
  *
  * Embarquée avec son moteur : une visite qui n'ouvre pas le 3615 ne la
  * télécharge jamais.
  *
- * Trois régimes visuels dans un seul fichier, parce qu'ils n'ont de sens
- * que les uns par rapport aux autres :
+ * 1985 tient dans une grille : tout y est aligné au caractère. 2026 et 2077
+ * ne sont pas habillés ici — c'est la page, intacte pour l'un, repeinte et
+ * cassée pour l'autre.
  *
- * — 1985 tient dans une grille. Tout y est aligné au caractère, et rien
- *   n'y respire.
- * — 2026 n'est pas habillé ici : c'est la page, et elle se montre au
- *   travers.
- * — 2067 est l'exact contraire de 1985 : pas de grille, pas de cadre, de
- *   l'espace partout, une composition qui n'a plus à tenir dans un tube.
- *
- * Le fond du Minitel est la seule couleur en dur du site. C'est assumé :
- * ce n'est pas une couleur de thème, c'est la couleur d'un tube cathodique
- * éteint, et elle ne doit pas suivre le thème.
+ * Les couleurs du Minitel et de 2077 sont les seules en dur du site : un
+ * tube cathodique éteint et une palette de jeu vidéo ne suivent pas le
+ * thème, ils le remplacent.
  */
 
 /* ── La coquille ───────────────────────────────────────────────────── */
 
-html[data-epoques='0'],
-html[data-epoques='2'] {
+/* Seul le Minitel confisque le défilement : les deux autres arrêts montrent
+   la page, qui doit rester parcourable. */
+html[data-epoques='0'] {
   overflow: hidden;
 }
 
@@ -40,13 +35,15 @@ html[data-epoques='2'] {
   outline: none;
 }
 
-/* Au présent, la scène est vide : la page reprend la main, clics compris.
-   Seule la barre reste attrapable. */
-.epoques[data-epoque='1'] {
+/* Aux arrêts qui montrent la page elle-même, la scène est vide : la page
+   reprend la main, clics compris. Seule la barre reste attrapable. */
+.epoques[data-epoque='1'],
+.epoques[data-epoque='2'] {
   pointer-events: none;
 }
 
-.epoques[data-epoque='1'] .epoques__barre {
+.epoques[data-epoque='1'] .epoques__barre,
+.epoques[data-epoque='2'] .epoques__barre {
   pointer-events: auto;
 }
 
@@ -62,7 +59,7 @@ html[data-epoques='2'] {
   flex: none;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: start;
+  align-items: center;
   gap: 0.6rem;
   padding: 0.75rem clamp(0.75rem, 4vw, 1.5rem) calc(0.75rem + env(safe-area-inset-bottom));
   border-top: 4px solid var(--texte);
@@ -70,15 +67,8 @@ html[data-epoques='2'] {
   font-family: var(--pol-mono);
 }
 
-.epoques__legende {
-  font-size: var(--t-menu);
-  color: var(--texte-doux);
-  text-wrap: pretty;
-  min-height: 2.4em;
-}
-
 .epoques__rail {
-  grid-column: 1 / -1;
+  grid-column: 1;
   position: relative;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -126,10 +116,15 @@ html[data-epoques='2'] {
   color: var(--texte-doux);
 }
 
+/*
+ * Sur l'aplat d'accent, le gris doux tombe sous le seuil. Ce qui le remplace
+ * dépend de l'aplat : l'encre tient 4,69:1 sur l'orange brutaliste, mais
+ * seulement 2,9:1 sur le magenta de 2077, où c'est le fond qui passe à
+ * 5,5:1. D'où ce jeton, que chaque palette renseigne.
+ */
+.epoques__arret[aria-pressed='true'],
 .epoques__arret[aria-pressed='true'] .epoques__nom {
-  /* Sur l'aplat d'accent, le gris doux tombe sous le seuil : on repasse à
-     l'encre, qui tient 4,69:1 sur cet orange. */
-  color: var(--texte);
+  color: var(--sur-pastille, var(--texte));
 }
 
 .epoques__fermer {
@@ -300,151 +295,145 @@ html[data-epoques='2'] {
   cursor: default;
 }
 
-/* ── 2067 ──────────────────────────────────────────────────────────── */
+/* ── 2077 ──────────────────────────────────────────────────────────── */
 
-.agent {
+/*
+ * Repeindre la page entière tient en une poignée de jetons : `base.css` ne
+ * contient aucune couleur en dur, tout passe par ces variables. On les
+ * remplace le temps de l'arrêt, et le site change d'époque sans qu'une
+ * seule règle de mise en page bouge.
+ */
+html[data-epoques='2'] {
+  --sur-pastille: #05060a;
+  --fond: #05060a;
+  --fond-eleve: #0d1020;
+  --texte: #fcee0a;
+  --texte-doux: #5ff7ff;
+  --accent: #ff2e6d;
+  --accent-texte: #ff5c8a;
+  --sur-accent: #05060a;
+  --trait: #2b3352;
+
+  color-scheme: dark;
+}
+
+/* L'aberration chromatique, discrète, sur les seuls grands titres. */
+html[data-epoques='2'] h1,
+html[data-epoques='2'] h2 {
+  text-shadow:
+    1px 0 var(--accent),
+    -1px 0 var(--texte-doux);
+}
+
+/* ── Les incidents ─────────────────────────────────────────────────── */
+
+/*
+ * Chacun est une classe posée quelques centaines de millisecondes sur un
+ * élément réel de la page, puis retirée. Rien n'est déplacé dans le DOM,
+ * aucun texte n'est réécrit : la page doit pouvoir redevenir elle-même.
+ */
+html[data-epoques='2'] .bug--decalage {
+  transform: translate(7px, -4px) skewX(-5deg);
+}
+
+/* Le damier magenta et noir, signature universelle d'une texture absente. */
+html[data-epoques='2'] .bug--texture {
+  color: transparent !important;
+  background-image: conic-gradient(#f0f 0 25%, #000 0 50%, #f0f 0 75%, #000 0);
+  background-size: 18px 18px;
+}
+
+html[data-epoques='2'] .bug--chute {
+  transform: translateY(55vh) rotate(7deg);
+  opacity: 0.35;
+}
+
+html[data-epoques='2'] .bug--fantome {
+  text-shadow:
+    4px 0 var(--accent),
+    -4px 0 var(--texte-doux);
+  opacity: 0.7;
+}
+
+html[data-epoques='2'] .bug--tranches {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% 21%,
+    0 21%,
+    0 33%,
+    100% 33%,
+    100% 60%,
+    0 60%,
+    0 73%,
+    100% 73%,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* ── Le bandeau de jeu ─────────────────────────────────────────────── */
+
+.bugs {
   position: absolute;
   inset: 0;
-  overflow-y: auto;
-  background: var(--fond);
-}
-
-.agent__defilement {
-  max-width: 52rem;
-  margin-inline: auto;
-  padding: clamp(1.5rem, 6vw, 4rem) clamp(1rem, 5vw, 3rem) 3rem;
-}
-
-.agent__annonce {
-  font-family: var(--pol-titre);
-  font-weight: 900;
-  font-size: var(--t-titre);
-  text-transform: uppercase;
-  letter-spacing: 0;
-  word-spacing: 0.1em;
-}
-
-.agent__intro {
-  max-width: var(--mesure);
-  margin-top: 0.5rem;
-  color: var(--texte-doux);
-  font-size: var(--t-petit);
-  text-wrap: pretty;
-}
-
-.agent__trace {
-  margin-top: calc(var(--pas) * 2);
-  display: grid;
-  /* Rien ne serre ici : c'est le contraire exact de la grille de 1985. */
-  gap: calc(var(--pas) * 1.75);
-}
-
-.agent__ligne {
-  display: grid;
-  grid-template-columns: 5.5rem minmax(0, 1fr);
-  gap: 0.15rem 1rem;
-  animation: agent-apparait 0.35s ease-out both;
-}
-
-@keyframes agent-apparait {
-  from {
-    opacity: 0;
-    transform: translateY(0.4rem);
-  }
-}
-
-.agent__instant {
-  grid-row: 1 / span 3;
+  /* Purement informatif : la page dessous reste cliquable et défilable. */
+  pointer-events: none;
   font-family: var(--pol-mono);
   font-size: var(--t-menu);
-  color: var(--texte-doux);
-  font-variant-numeric: tabular-nums;
-  text-align: right;
+  line-height: 1.5;
 }
 
-.agent__acteur {
-  font-family: var(--pol-mono);
-  font-size: var(--t-menu);
+.bugs__hud {
+  position: absolute;
+  top: clamp(0.5rem, 3vw, 1.25rem);
+  left: clamp(0.5rem, 3vw, 1.25rem);
+  padding: 0.5rem 0.75rem;
+  border: 2px solid var(--accent);
+  background: rgb(5 6 10 / 82%);
   color: var(--texte-doux);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
 }
 
-.agent__ligne--reponse .agent__acteur {
+.bugs__titre {
+  color: var(--texte);
+  font-weight: 700;
+}
+
+.bugs__mesures {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.15rem 0.9rem;
+  margin-top: 0.25rem;
+}
+
+.bugs__flux {
   color: var(--accent-texte);
 }
 
-.agent__intitule {
-  font-size: var(--t-corps);
-  text-wrap: pretty;
-}
-
-.agent__detail {
-  max-width: var(--mesure);
+.bugs__journal {
+  position: absolute;
+  left: clamp(0.5rem, 3vw, 1.25rem);
+  right: clamp(0.5rem, 3vw, 1.25rem);
+  bottom: clamp(0.5rem, 3vw, 1.25rem);
+  display: grid;
+  gap: 0.1rem;
   color: var(--texte-doux);
-  font-size: var(--t-petit);
-  text-wrap: pretty;
 }
 
-.agent__ligne--ouverte {
-  padding-left: 1rem;
-  margin-left: -1rem;
-  border-left: 4px solid var(--accent);
-}
-
-.agent__ligne--ouverte .agent__intitule {
-  font-family: var(--pol-titre);
-  font-weight: 900;
-  font-size: var(--t-poste);
-}
-
-.agent__canal {
-  grid-column: 2;
+.bugs__ligne {
   justify-self: start;
-  margin-top: 0.75rem;
-  padding: 0.5rem 1rem;
-  border: 3px solid var(--texte);
-  box-shadow: 4px 4px 0 var(--accent);
-  font-weight: 700;
-  text-transform: uppercase;
-  text-decoration: none;
-  font-size: var(--t-petit);
-  letter-spacing: 0.02em;
+  max-width: 100%;
+  padding: 0.05rem 0.4rem;
+  /* Sans fond, le journal se superpose au texte de la page et les deux
+     deviennent illisibles. */
+  background: rgb(5 6 10 / 88%);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.agent__canal:hover {
-  background: var(--texte);
-  color: var(--fond);
-  box-shadow: 0 0 0 var(--accent);
-  transform: translate(4px, 4px);
-}
-
-.agent__bilan {
-  margin-top: calc(var(--pas) * 2.5);
-  padding-top: calc(var(--pas) * 1.25);
-  border-top: 2px solid var(--trait);
-  font-family: var(--pol-mono);
-  font-size: var(--t-menu);
-  color: var(--texte-doux);
-  text-wrap: pretty;
-}
-
-.agent__bilan:empty {
-  display: none;
-}
-
-/* Sur un téléphone, la marge des horodatages mange la moitié de la
-   largeur : la trace passe en deux niveaux plutôt qu'en deux colonnes. */
-@media (max-width: 34rem) {
-  .agent__ligne {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .agent__instant {
-    grid-row: auto;
-    text-align: left;
-  }
-
-  .agent__canal {
-    grid-column: 1;
-  }
+/* Une erreur se voit : les avertissements restent en retrait. */
+.bugs__ligne:last-child {
+  color: var(--texte);
 }

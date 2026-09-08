@@ -7,14 +7,12 @@
  * écran de 40 colonnes sur 24 lignes, des menus numérotés, une page à la
  * fois, et le texte qui arrive caractère par caractère.
  *
- * Les contraintes sont respectées parce qu'elles SONT le sujet :
+ * Les contraintes d'origine sont tenues :
  *
  * — 40×24. Tout est mis à la colonne, coupé, paginé. Une page qui déborde
- *   devient deux pages et une touche SUITE, comme à l'époque.
+ *   devient deux pages et une touche SUITE.
  * — 1200 bits par seconde, dix bits par caractère : cent vingt caractères
- *   par seconde. Une page pleine met huit secondes à s'afficher. Ce n'est
- *   pas un effet, c'est le débit du Minitel 1, et c'est le seul moyen de
- *   faire sentir ce que « lent » voulait dire.
+ *   par seconde, le débit du Minitel 1. Une page pleine met huit secondes.
  * — Pas de police téléchargée : la pile monospace du système suffit, comme
  *   pour le reste du site.
  *

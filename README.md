@@ -30,88 +30,67 @@ donnée mal formée fait échouer `npm run build`, pas la mise en ligne. Vérifi
 format des dates, cohérence des périodes, ordre du parcours, longueur de la
 description.
 
-## Les trois écarts
+## Ce qu'il y a en plus
 
-Trois choses en plus de la page. Deux sont cachées, la troisième se voit.
+Trois choses. Deux sont cachées, la troisième se voit.
 
 ### Le casse-briques
 
-Cinq clics sur le nom, en haut de page, et les étiquettes de la section
-« Compétences » deviennent les briques d'un casse-briques. Le nom bascule
-légèrement au troisième clic : c'est le seul indice.
+Cinq clics sur le nom, en haut de page. Les étiquettes de la section
+« Compétences » deviennent les briques d'un casse-briques : pas de terrain
+dessiné, les briques **sont** les `<li>` de la page, à leur position réelle,
+et la toile ne dessine que la balle et la raquette. Casser une brique, c'est
+poser une classe sur son élément — d'où le fait qu'elles gardent leur place
+dans le flux en disparaissant, sinon la page se réagencerait sous la balle à
+chaque impact.
 
-Il n'y a pas de terrain dessiné. Les briques **sont** les `<li>` de la page,
-à leur position réelle ; la toile ne dessine que la balle et la raquette,
-par-dessus. Casser une brique, c'est poser une classe sur son élément — d'où
-le fait qu'elles gardent leur place dans le flux en disparaissant, sinon la
-page se réagencerait sous la balle à chaque impact. Quitter (Échap) rend la
-page exacte : les compétences repoussent.
-
-La raquette suit le doigt, le pointeur ou les flèches. Le terrain s'arrête
-au bord inférieur du bandeau d'état, mesuré à chaque redimensionnement : le
-haut de l'écran ne lui appartient pas, et une balle qui rebondit derrière un
-bandeau opaque est une balle qu'on a perdue.
+La raquette suit le doigt, le pointeur ou les flèches. Le terrain s'arrête au
+bord inférieur du bandeau d'état, mesuré à chaque redimensionnement. Quitter
+(Échap) rend la page exacte : les compétences repoussent.
 
 ### Le rapport de tests
 
-On tape `tdd` n'importe où sur la page — la console le souffle à qui
-l'ouvre — et un bandeau de test runner s'ouvre en bas de l'écran. Au doigt,
-c'est un appui long sur le pied de page : le clavier d'un téléphone
-n'apparaît que pour un champ de saisie, et cette page n'en a aucun, donc
-sans ce second geste le rapport y serait inaccessible. Une barre d'accent
-grandit sous le pied de page pendant l'appui, sinon rien ne distingue un
-appui long d'une page qui ne répond pas.
+On tape `tdd` n'importe où sur la page — la console le souffle à qui l'ouvre
+— ou on appuie longuement sur le pied de page, seul geste possible sur un
+téléphone : le clavier n'y apparaît que pour un champ de saisie, et cette
+page n'en a aucun.
 
 Les quatorze tests sont vrais. Ils lisent le DOM affiché, calculent les
 rapports de contraste à partir des couleurs réellement appliquées par le
-navigateur, interrogent l'API Performance sur ce qui a été téléchargé.
-Aucun verdict n'est écrit d'avance : cassez l'ordre du parcours, ajoutez une
-police distante, et le rapport devient rouge. Chaque test souligne dans la
-page les éléments qu'il inspecte pendant qu'il tourne — c'est la seule
-preuve honnête qu'il lit bien quelque chose.
+navigateur, interrogent l'API Performance sur ce qui a été téléchargé. Aucun
+verdict n'est écrit d'avance : cassez l'ordre du parcours, ajoutez une police
+distante, et le rapport devient rouge. Chaque test souligne dans la page les
+éléments qu'il inspecte pendant qu'il tourne.
 
 Le dernier échoue, toujours : `page.neChargeAucunJavaScript()`. Il ne peut
 pas en être autrement, puisqu'il a fallu charger un module pour l'afficher.
-Son bouton **Corriger** ne corrige rien. Il lance le casse-briques.
+Son bouton **Corriger** ne corrige rien — il lance le casse-briques.
 
 ### 3615 PUSSACQ
 
-Un bouton visible, dans le pied de page. Un code de service Vidéotex ne se
-cachait pas : il s'affichait en bas des publicités et des génériques, et
-c'était toute son élégance. C'est aussi le seul des trois qu'un doigt trouve
-sans rien savoir.
+Un bouton visible dans le pied de page, qui ouvre un curseur à trois arrêts.
 
-Il ouvre un curseur à trois arrêts, qu'on fait glisser :
-
-- **1985** — le même profil sur Minitel. Quarante colonnes sur vingt-quatre
-  lignes, menus numérotés à points de conduite, une page à la fois, touches
-  SOMMAIRE / RETOUR / SUITE. Le texte arrive à **cent vingt caractères par
-  seconde** : mille deux cents bits sur dix bits par caractère, le débit du
-  Minitel 1. Une page pleine met huit secondes. Ce n'est pas un effet, c'est
-  la seule façon de faire sentir ce que « lent » voulait dire — et un
-  toucher l'affiche d'un coup, parce qu'on n'inflige pas 1985 à quelqu'un.
+- **1985** — le profil sur Minitel. Quarante colonnes sur vingt-quatre
+  lignes, menus numérotés à points de conduite, pagination, touches
+  SOMMAIRE / RETOUR / SUITE. Le texte arrive à cent vingt caractères par
+  seconde : mille deux cents bits sur dix bits par caractère, le débit du
+  Minitel 1. Une page pleine met huit secondes ; un toucher l'affiche d'un
+  coup.
 - **2026** — cette page. La scène se vide, l'habillage laisse passer les
-  clics, le défilement se débloque. C'est ce qui fait tenir l'ensemble : on
-  ne compare pas deux pastiches, on les compare à un original qui est sous
-  les yeux.
-- **2067** — le profil lu par une machine. Deux agents s'accordent sur ce
-  que la page affirme et se quittent, en quatre cent douze microsecondes.
-  Il faut ralentir la trace de dix-sept mille fois pour qu'un œil humain en
-  voie quelque chose. Le miroir exact de 1985 : aucune des deux époques
-  n'est à la vitesse de son lecteur, celle du milieu si.
+  clics, le défilement se débloque.
+- **2077** — la page encore, mais en version 1.0. Palette néon, compteur
+  d'images par seconde (mesuré), journal d'erreurs, et des éléments qui se
+  décalent, chutent, se dédoublent ou perdent leur texture. Rien n'est
+  déplacé dans le DOM et aucun texte n'est réécrit : uniquement des classes,
+  toutes retirées à la sortie.
 
-Les chiffres de 2067 ne sont pas décoratifs — ils sont comptés dans les
-données `schema.org/Person` que la page publie déjà, et la cohérence du
-parcours y est vérifiée, pas affirmée. L'échange se termine sur la seule
-question qui compte en entretien, celle qu'aucune donnée structurée ne
-portera jamais. La réponse est un `204`, et une adresse. C'est déjà la
-conclusion de la page « Me joindre » du Minitel, quatre-vingt-deux ans plus
-tôt.
+Le Minitel relit la page via `donnees.ts` : aucune ligne de contenu n'est
+écrite deux fois, et modifier `profil.ts` le met à jour comme il met à jour
+la page.
 
-Techniquement, la traversée est la démonstration du choix d'architecture du
-site : `profil.ts` ne sait pas comment il est rendu. Les trois époques
-relisent la même page — via `donnees.ts` — et rien n'est dupliqué. Modifier
-le contenu les déplace toutes les trois.
+Le passage en néon de 2077 ne touche qu'une poignée de jetons. `base.css` ne
+contient aucune couleur en dur, donc les remplacer suffit à repeindre le site
+sans qu'une seule règle de mise en page bouge.
 
 ### Ce que ça coûte
 
@@ -128,8 +107,8 @@ le contenu les déplace toutes les trois.
 Une visite qui ne déclenche rien télécharge **2,1 ko compressé** de
 JavaScript : trois compteurs de gestes et l'aide de préchargement de Vite.
 Une feuille de style ne peut pas attendre le déclenchement quand c'est elle
-qui l'annonce ; les trois autres voyagent avec leur moteur (2,7, 4,4 et
-6,0 ko compressés) et ne sont téléchargées que si on va les chercher.
+qui l'annonce ; les trois autres voyagent avec leur moteur et ne sont
+téléchargées que si on va les chercher.
 
 ## Déploiement
 
@@ -143,8 +122,8 @@ formatage, les types, les contrastes ou le contenu ne passent pas.
   page compte des clics et des touches ; le reste n'est téléchargé que si on
   le déclenche. Pas de Next.js (ni serveur, ni route, ni état à gérer ici).
 - **Le contenu ne sait pas comment il est rendu** : c'est ce qui permet à un
-  Minitel, à une page brutaliste et à une trace inter-agents d'afficher le
-  même profil sans qu'une ligne de texte soit écrite deux fois.
+  Minitel et à une page brutaliste d'afficher le même profil sans qu'une
+  ligne de texte soit écrite deux fois.
 - **Contenu typé, séparé du rendu** : `profil.ts` + Zod, sans dépendance
   supplémentaire (`astro/zod`).
 - **Une page** : une carte de visite, pas un site.

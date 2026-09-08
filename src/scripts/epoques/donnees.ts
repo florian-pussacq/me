@@ -3,18 +3,14 @@
  *  LE PROFIL, RELU DEPUIS LA PAGE.
  * ═══════════════════════════════════════════════════════════════════════
  *
- * Les trois époques affichent le même contenu. Encore faut-il qu'elles le
- * tiennent de la même source — sinon ce ne sont plus trois rendus d'un
- * profil, mais trois textes qui se ressemblent et qui divergeront au
- * premier changement de `profil.ts`.
+ * Les époques affichent le même contenu. Encore faut-il qu'elles le tiennent
+ * de la même source — sinon ce ne sont plus des rendus d'un profil, mais des
+ * textes qui se ressemblent et qui divergeront au premier changement de
+ * `profil.ts`.
  *
- * Cette source, c'est la page elle-même. Rien n'est dupliqué, rien n'est
- * embarqué : on relit le DOM rendu, et les données structurées `Person`
- * déjà présentes dans l'en-tête. Modifier `profil.ts` change les trois
- * époques du même coup, sans que personne ait à y penser.
- *
- * C'est aussi l'argument de la traversée : le contenu n'a pas bougé, seule
- * son enveloppe a changé trois fois.
+ * Cette source, c'est la page elle-même : on relit le DOM rendu, rien n'est
+ * dupliqué, rien n'est embarqué. Modifier `profil.ts` change les époques du
+ * même coup, sans que personne ait à y penser.
  */
 
 export interface Poste {
@@ -61,8 +57,6 @@ export interface Profil {
   readonly formation: readonly Diplome[];
   readonly complements: readonly Groupe[];
   readonly liens: readonly Lien[];
-  /** Les données `schema.org/Person` de l'en-tête, telles quelles. */
-  readonly structurees: Record<string, unknown>;
 }
 
 function texte(racine: ParentNode, selecteur: string): string {
@@ -73,20 +67,6 @@ function textes(racine: ParentNode, selecteur: string): string[] {
   return Array.from(racine.querySelectorAll(selecteur), (element) =>
     (element.textContent ?? '').trim().replace(/\s+/g, ' '),
   ).filter(Boolean);
-}
-
-function lireStructurees(): Record<string, unknown> {
-  const balise = document.querySelector('script[type="application/ld+json"]');
-  try {
-    const analyse: unknown = JSON.parse(balise?.textContent ?? '{}');
-    return typeof analyse === 'object' && analyse !== null
-      ? (analyse as Record<string, unknown>)
-      : {};
-  } catch {
-    // Un balisage illisible ne doit pas emporter la traversée avec lui : la
-    // vue de 2067 se contentera de ce qu'elle trouve dans le DOM.
-    return {};
-  }
 }
 
 export function lireProfil(): Profil {
@@ -147,6 +127,5 @@ export function lireProfil(): Profil {
     formation,
     complements,
     liens: [...liens.values()],
-    structurees: lireStructurees(),
   };
 }
